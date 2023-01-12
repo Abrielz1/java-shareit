@@ -6,63 +6,59 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidationException;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.storige.UserStorage;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
 
-@Service
 @Slf4j
+@Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserServiceImpl implements UserService {
 
-    private final UserStorage userStorage;
+    private final UserStorage repository;
 
-    public User create(User user) {
-        emailChecker(user.getUserEmail());
-        log.info("Пользователь создан");
-        return userStorage.create(user);
-    }
-
-    public User update(int id, UserDto userDto) {
-        if (userDto.getUserEmail() != null) {
-            emailChecker(userDto.getUserEmail());
-        }
-        log.info("Пользователь обновлён");
-        return userStorage.update(id, userDto);
-    }
-
-    public User getById(int id) {
-        if (!userStorage.findAll().contains(id)) {
-            log.warn("Пользователь с id{} не найден", id);
-            throw new ObjectNotFoundException("Пользователь найден");
-        }
-        return userStorage.getById(id);
-    }
-
-    public User deleteById(int id) {
-        log.info("Пользователь с id{} удалён", id);
-        return deleteById(id);
-    }
-
+    @Override
     public List<User> findAll() {
-        log.info("Список пользователей отправлен");
-        return userStorage.findAll();
+        log.info("Пользователи отправлены");
+        return repository.findAll();
     }
 
-    private void emailChecker(String email) {
-        List <User> temp = findAll();
-        boolean flag = true;
-        for (User usr : temp) {
-            if (usr.getUserEmail().equals(email)) {
-                flag = false;
-            }
-        }
-        if (!flag) {
-            log.warn("Пользователь уже существует");
-            throw new ValidationException("Пользователь уже существует");
-        }
+    @Override
+    public User getById(long id) {
+        log.info("Пользователь с id{} отправлен", id);
+        return repository.getById(id).orElseThrow(() -> {
+            log.warn("User with id {} not found", id);
+            throw new ObjectNotFoundException("User not found");
+        });
     }
 
+    @Override
+    public UserDto create(UserDto userDto) {
+        validator(userDto.getEmail());
+        log.info("Пользователь создан");
+        return repository.create(userDto);
+    }
+
+    @Override
+    public User update(long id, User user) {
+        if (user.getEmail() != null) validator(user.getEmail());
+        return repository.update(id, user);
+    }
+
+    @Override
+    public void delete(long id) {
+        log.info("Пользователь с id {} удалён", id);
+        repository.delete(id);
+    }
+
+    private void validator(String email) {
+        List<User> users = repository.findAll();
+        boolean flag = users.stream().anyMatch(repoUser -> repoUser.getEmail().equals(email));
+        if (flag) {
+            log.warn("Пользователь с таким e-mail уже существует");
+            throw new ValidationException("Пользователь с таким e-mail уже существует");
+        }
+    }
 }
