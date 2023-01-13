@@ -10,9 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Item {
-    long id;
-    String name;
-    String description;
-    Boolean available;
-    long owner;
+    private long id;
+    private String name;
+    private String description;
+    private Boolean available;
+    private long owner;
 }

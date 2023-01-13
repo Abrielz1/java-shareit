@@ -43,7 +43,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(long id, User user) {
-        if (user.getEmail() != null) validator(user.getEmail());
+        if (user.getEmail() != null) {
+            validator(user.getEmail());
+        }
         return repository.update(id, user);
     }
 
@@ -55,10 +57,15 @@ public class UserServiceImpl implements UserService {
 
     private void validator(String email) {
         List<User> users = repository.findAll();
-        boolean flag = users.stream().anyMatch(repoUser -> repoUser.getEmail().equals(email));
-        if (flag) {
+        if (checker(users, email)) {
             log.warn("Пользователь с таким e-mail уже существует");
             throw new ValidationException("Пользователь с таким e-mail уже существует");
         }
+    }
+
+    private boolean checker(List<User> users,String email) {
+        boolean flag = users.stream()
+                .anyMatch(repoUser -> repoUser.getEmail().equals(email));
+        return flag;
     }
 }

@@ -5,12 +5,16 @@ import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import java.util.*;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UserStorageImpl implements UserStorage {
 
-    private Map<Long, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
 
     private long idCounter = 1;
 
@@ -34,11 +38,15 @@ public class UserStorageImpl implements UserStorage {
     @Override
     public User update(long id, User user) {
         if (users.containsKey(id)) {
-            if (user.getName() != null) users.get(id).setName(user.getName());
-            if (user.getEmail() != null) users.get(id).setEmail(user.getEmail());
-            return users.get(id);
-        } else  {
-            throw new ObjectNotFoundException("Юзер не найден");
+            if (user.getName() != null) {
+                users.get(id).setName(user.getName());
+            }
+            if (user.getEmail() != null) {
+                users.get(id).setEmail(user.getEmail());
+            }
+                return users.get(id);
+            } else  {
+                throw new ObjectNotFoundException("Юзер не найден");
         }
     }
 

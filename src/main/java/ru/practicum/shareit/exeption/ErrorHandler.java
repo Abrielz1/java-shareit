@@ -12,15 +12,15 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handlerValidationException(final ValidationException e) {
-        log.warn("409 {}", e.getMessage());
-        return new ErrorResponse("Validation error 409", e.getMessage());
+    public ErrorResponse handlerValidationException(final ValidationException exception) {
+        log.warn("409 {}", exception.getMessage());
+        return new ErrorResponse("Validation error 409", exception.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handlerNotFoundException(final ObjectNotFoundException e) {
-        log.warn("404 {}", e.getMessage());
-        return new ErrorResponse("Object not found 404", e.getMessage());
+    public ErrorResponse handlerNotFoundException(final ObjectNotFoundException exception) {
+        log.warn("404 {}", exception.getMessage());
+        return new ErrorResponse("Object not found 404", exception.getMessage());
     }
 }
