@@ -1,66 +1,88 @@
 package ru.practicum.shareit.item.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.item.mapper.ItemMapper;
+import org.springframework.stereotype.Service;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
+import lombok.RequiredArgsConstructor;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 import java.util.List;
 
-@Service
 @Slf4j
+@Service
+@Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemServiceImpl implements ItemService {
-
     private final ItemStorage itemStorage;
+
     private final UserStorage userStorage;
 
+    @Transactional
     @Override
-    public ItemDto create(long userId, ItemDto itemDto) {
-        userStorage.getById(userId).orElseThrow(() -> {
-            log.warn("User not found");
-            throw new ObjectNotFoundException("User not found");
+    public ItemDto create(long owner, ItemDto itemDto) {
+        userStorage.findById(owner).orElseThrow(() -> {
+            log.warn("Пользователь c id{} не найден", owner);
+            throw new ObjectNotFoundException("Пользователь не найден");
         });
-        log.info("Item created");
-        return itemStorage.create(userId, itemDto);
+        log.info("Вещь с id{} создана", itemDto.getId());
+        Item item = itemStorage.save(ItemMapper.toItem(itemDto, owner));
+        itemDto.setId(item.getId());
+        return ItemMapper.toItemDto(item);
     }
 
     @Override
-    public ItemDto update(long userId, long itemId, Item item) {
-        itemStorage.findItemForUpdate(userId, itemId).orElseThrow(() -> {
-            log.warn("Item not found for update");
-            throw new ObjectNotFoundException("Item not found for update");
+    public ItemDto update(long owner, long itemId, ItemDto itemDto) {
+        Item item = itemStorage.findById(owner).orElseThrow(() -> {
+            log.warn("Вещь с id{} для обновления не найдена", itemId);
+            throw new ObjectNotFoundException("Вещь для обновления не найдена");
         });
-        log.info("Item updated");
-        return itemStorage.update(userId, itemId, item);
+        if (item.getOwner() == owner) {
+            item.setName(itemDto.getName());
+            item.setDescription(itemDto.getDescription());
+            item.setAvailable(itemDto.getAvailable());
+            itemStorage.save(item);
+            log.info("Вещь c id{} обновлена", itemId);
+        } else {
+            log.warn("Вещь с id{} для обновления не найдена", itemId);
+            throw new ObjectNotFoundException("Вещь для обновления не найдена");
+        }
+        return ItemMapper.toItemDto(item);
     }
 
     @Override
     public ItemDto findItem(long itemId) {
-        log.info("Item sent");
-        return itemStorage.findItem(itemId).orElseThrow(() -> {
-            log.warn("Item not found");
-            throw new ObjectNotFoundException("Item not found");
+        log.info("Вещь c id{} отправлена", itemId);
+        Item item = itemStorage.findById(itemId).orElseThrow(() -> {
+            log.warn("Вещь c id{} не найдена", itemId);
+            throw new ObjectNotFoundException("Вещь не найдена");
         });
+        return ItemMapper.toItemDto(item);
     }
-
     @Override
-    public List<ItemDto> findAll(long userId) {
-        log.info("Items sent");
-        return itemStorage.findAll(userId);
+    public List<ItemDto> findAll(long owner) {
+        log.info("Список вещей владельца с id{} отправлена", owner);
+        return itemStorage.findAllByOwner(owner).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ItemDto> searchItem(String text) {
-        log.info("Search results sent");
+        log.info("Высланы результаты поиска");
         if (text.isBlank()) {
+            log.info("Ничего не найдено!");
             return Collections.emptyList();
         }
-        return itemStorage.searchItem(text);
+        return itemStorage.findByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text)
+                .stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 }

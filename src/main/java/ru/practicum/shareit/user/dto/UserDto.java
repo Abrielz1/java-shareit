@@ -17,10 +17,10 @@ public class UserDto {
 
     private long id;
 
-    @NotBlank
+    @NotBlank@NotBlank(groups = Create.class)
     private String name;
 
-    @NotNull
-    @Email
+    @NotNull(groups = Create.class)
+    @Email(groups = {Create.class, Update.class})
     private String email;
 }

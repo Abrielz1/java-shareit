@@ -1,71 +1,70 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
-import ru.practicum.shareit.exeption.ValidationException;
+import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.mapper.UserMapper;
+import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
-
+import lombok.RequiredArgsConstructor;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
-@Slf4j
 @Service
+@Transactional
+@Slf4j
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserServiceImpl implements UserService {
+    private final UserStorage storage;
 
-    private final UserStorage repository;
-
-    @Override
-    public List<User> findAll() {
-        log.info("Пользователи отправлены");
-        return repository.findAll();
-    }
-
-    @Override
-    public User getById(long id) {
-        log.info("Пользователь с id{} отправлен", id);
-        return repository.getById(id).orElseThrow(() -> {
-            log.warn("User with id {} not found", id);
-            throw new ObjectNotFoundException("User not found");
-        });
-    }
-
+    @Transactional
     @Override
     public UserDto create(UserDto userDto) {
-        validator(userDto.getEmail());
-        log.info("Пользователь создан");
-        return repository.create(userDto);
+        log.info("Пользователь с id{} создан", userDto.getId());
+        User user = storage.save(UserMapper.toUser(userDto));
+        return UserMapper.toUserDto(user);
     }
 
     @Override
-    public User update(long id, User user) {
-        if (user.getEmail() != null) {
-            validator(user.getEmail());
+    public UserDto update(long id, UserDto userDto) {
+        User user = storage.findById(id).orElseThrow(() -> {
+            log.warn("Пользователь c id{} не найден", id);
+            throw new ObjectNotFoundException("Пользователь не найден");
+        });
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
         }
-        return repository.update(id, user);
+        if (userDto.getEmail() != null) {
+            user.setEmail(user.getEmail());
+        }
+        log.info("Пользователь с id{} обновлён", id);
+        return UserMapper.toUserDto(storage.save(user));
+    }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+        log.info("Пользователи отправлены");
+        return storage.findAll().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDto getById(long id) {
+        User user = storage.findById(id).orElseThrow(() -> {
+            log.warn("Пользователь c id {} не найден", id);
+            throw new ObjectNotFoundException("Пользователь не найден");
+        });
+        log.info("Пользователь с id{} отправлен", id);
+        return UserMapper.toUserDto(user);
     }
 
     @Override
     public void delete(long id) {
         log.info("Пользователь с id {} удалён", id);
-        repository.delete(id);
-    }
-
-    private void validator(String email) {
-        List<User> users = repository.findAll();
-        if (checker(users, email)) {
-            log.warn("Пользователь с таким e-mail уже существует");
-            throw new ValidationException("Пользователь с таким e-mail уже существует");
-        }
-    }
-
-    private boolean checker(List<User> users,String email) {
-        boolean flag = users.stream()
-                .anyMatch(repoUser -> repoUser.getEmail().equals(email));
-        return flag;
+        storage.findById(id).ifPresent(storage::delete);
     }
 }
