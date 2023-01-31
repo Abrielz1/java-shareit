@@ -23,15 +23,6 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping
-    public UserDto create(@Validated(Create.class) @RequestBody UserDto userDto) {
-        return userService.create(userDto);
-    }
-
-    @PatchMapping("/{id}")
-    public UserDto update( @PathVariable long id, @Validated(Update.class) @RequestBody UserDto userDto) {
-        return userService.update(id, userDto);
-    }
 
     @GetMapping
     public List<UserDto> getAllUsers() {
@@ -41,6 +32,16 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDto getById(@PathVariable long id) {
         return userService.getById(id);
+    }
+
+    @PostMapping
+    public UserDto create(@Validated(Create.class) @RequestBody UserDto userDto) {
+        return userService.create(userDto);
+    }
+
+    @PatchMapping("/{id}")
+    public UserDto update(@PathVariable long id, @Validated(Update.class) @RequestBody UserDto userDto) {
+        return userService.update(id, userDto);
     }
 
     @DeleteMapping("/{id}")

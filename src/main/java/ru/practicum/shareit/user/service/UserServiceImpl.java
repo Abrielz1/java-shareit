@@ -18,53 +18,52 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserServiceImpl implements UserService {
-    private final UserStorage storage;
-
-    @Transactional
-    @Override
-    public UserDto create(UserDto userDto) {
-        log.info("Пользователь с id{} создан", userDto.getId());
-        User user = storage.save(UserMapper.toUser(userDto));
-        return UserMapper.toUserDto(user);
-    }
-
-    @Override
-    public UserDto update(long id, UserDto userDto) {
-        User user = storage.findById(id).orElseThrow(() -> {
-            log.warn("Пользователь c id{} не найден", id);
-            throw new ObjectNotFoundException("Пользователь не найден");
-        });
-        if (userDto.getName() != null) {
-            user.setName(userDto.getName());
-        }
-        if (userDto.getEmail() != null) {
-            user.setEmail(user.getEmail());
-        }
-        log.info("Пользователь с id{} обновлён", id);
-        return UserMapper.toUserDto(storage.save(user));
-    }
+    private final UserStorage repository;
 
     @Override
     public List<UserDto> getAllUsers() {
-        log.info("Пользователи отправлены");
-        return storage.findAll().stream()
+        log.info("All users sent");
+        return repository.findAll().stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public UserDto getById(long id) {
-        User user = storage.findById(id).orElseThrow(() -> {
-            log.warn("Пользователь c id {} не найден", id);
-            throw new ObjectNotFoundException("Пользователь не найден");
+        User user = repository.findById(id).orElseThrow(() -> {
+            log.warn("User with id {} not found", id);
+            throw new ObjectNotFoundException("User not found");
         });
-        log.info("Пользователь с id{} отправлен", id);
         return UserMapper.toUserDto(user);
     }
 
     @Override
+    @Transactional
+    public UserDto create(UserDto userDto) {
+        log.info("User created");
+        User user = repository.save(UserMapper.toUser(userDto));
+        return UserMapper.toUserDto(user);
+    }
+
+    @Override
+    @Transactional
+    public UserDto update(long id, UserDto userDto) {
+        User user = repository.findById(id).orElseThrow(() -> {
+            log.warn("User with id {} not found", id);
+            throw new ObjectNotFoundException("User not found");
+        });
+        if (userDto.getEmail() != null) {
+            user.setEmail(userDto.getEmail());
+        }
+        if (userDto.getName() != null) user.setName(userDto.getName());
+        log.info("User updated");
+        return UserMapper.toUserDto(repository.save(user));
+    }
+
+    @Override
+    @Transactional
     public void delete(long id) {
-        log.info("Пользователь с id {} удалён", id);
-        storage.findById(id).ifPresent(storage::delete);
+        log.info("User with id {} deleted", id);
+        repository.findById(id).ifPresent(repository::delete);
     }
 }

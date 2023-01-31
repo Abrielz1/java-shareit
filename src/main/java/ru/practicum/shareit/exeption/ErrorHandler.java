@@ -23,4 +23,18 @@ public class ErrorHandler {
         log.warn("404 {}", exception.getMessage());
         return new ErrorResponse("Object not found 404", exception.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerBadRequest(final BadRequestException e) {
+        log.warn("404 {}", e.getMessage(), e);
+        return new ErrorResponse("Object not available 400 ", e.getMessage());
+    }
+
+    @ExceptionHandler(UnsupportedStateException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handlerUnsupportedState(final UnsupportedStateException e) {
+        log.warn("500 {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage(), e.getMessage());
+    }
 }
