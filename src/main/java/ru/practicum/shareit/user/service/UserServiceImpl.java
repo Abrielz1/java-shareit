@@ -1,24 +1,26 @@
 package ru.practicum.shareit.user.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exeption.ObjectNotFoundException;
-import ru.practicum.shareit.user.storage.UserStorage;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exeption.ObjectNotFoundException;
+import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
-import lombok.RequiredArgsConstructor;
-import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
+import ru.practicum.shareit.user.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @Slf4j
+@Transactional(readOnly = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserServiceImpl implements UserService {
-    private final UserStorage repository;
+
+    private final UserRepository repository;
 
     @Override
     public List<UserDto> getAllUsers() {
@@ -67,3 +69,6 @@ public class UserServiceImpl implements UserService {
         repository.findById(id).ifPresent(repository::delete);
     }
 }
+
+
+

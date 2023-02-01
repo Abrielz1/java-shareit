@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.mapper;
+package ru.practicum.shareit.item;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,6 @@ import java.util.ArrayList;
 @Getter
 @Setter
 public class ItemMapper {
-
 
     public static ItemDto toItemDto(Item item) {
         return new ItemDto(item.getId(),

@@ -26,15 +26,15 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handlerBadRequest(final BadRequestException e) {
-        log.warn("404 {}", e.getMessage(), e);
-        return new ErrorResponse("Object not available 400 ", e.getMessage());
+    public ErrorResponse handlerBadRequest(final BadRequestException exception) {
+        log.warn("404 {}", exception.getMessage(), exception);
+        return new ErrorResponse("Object not available 400 ", exception.getMessage());
     }
 
     @ExceptionHandler(UnsupportedStateException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handlerUnsupportedState(final UnsupportedStateException e) {
-        log.warn("500 {}", e.getMessage(), e);
-        return new ErrorResponse(e.getMessage(), e.getMessage());
+    public ErrorResponse handlerUnsupportedState(final UnsupportedStateException exception) {
+        log.warn("500 {}", exception.getMessage(), exception);
+        return new ErrorResponse(exception.getMessage(), exception.getMessage());
     }
 }
