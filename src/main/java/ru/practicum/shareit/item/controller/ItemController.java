@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemController {
 
-    private final String HEADER = "X-Sharer-User-Id"; //код стиль тута падает
+ //   private final String HEADER = "X-Sharer-User-Id"; //код стиль тута падает
                                                       //Не получается пок красоте сделать
     private final ItemService itemService;
 

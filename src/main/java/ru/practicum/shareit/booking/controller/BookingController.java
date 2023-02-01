@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BookingController {
 
-    private final String HEADER = "X-Sharer-User-Id";//код стиль тута падает
+ //   private final String HEADER = "X-Sharer-User-Id";//код стиль тута падает
                                                      //Не получается пок красоте сделать
 
     private final BookingService bookingService;
