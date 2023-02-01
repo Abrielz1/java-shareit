@@ -24,27 +24,26 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemController {
 
-    private static final String HEADER = "X-Sharer-User-Id";
 
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDtoBooking> findAll(@RequestHeader(HEADER) long id) {
+    public List<ItemDtoBooking> findAll(@RequestHeader("X-Sharer-User-Id") long id) {
         return itemService.findAll(id);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDtoBooking findItem(@RequestHeader(HEADER) long userId, @PathVariable long itemId) {
+    public ItemDtoBooking findItem(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
         return itemService.findItem(userId, itemId);
     }
 
     @PostMapping
-    public ItemDto create(@RequestHeader(HEADER) long userId, @Validated(Create.class) @RequestBody ItemDto itemDto) {
+    public ItemDto create(@RequestHeader("X-Sharer-User-Id") long userId, @Validated(Create.class) @RequestBody ItemDto itemDto) {
         return itemService.create(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader(HEADER) long userId, @PathVariable long itemId, @RequestBody ItemDto itemDto) {
+    public ItemDto update(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId, @RequestBody ItemDto itemDto) {
         return itemService.update(userId, itemId, itemDto);
     }
 
@@ -54,7 +53,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@RequestHeader(HEADER) long userId,
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
                                  @PathVariable long itemId,
                                  @Validated(Create.class) @RequestBody CommentDto commentDto) {
         return itemService.addComment(userId, itemId, commentDto);
