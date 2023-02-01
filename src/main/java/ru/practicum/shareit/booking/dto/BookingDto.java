@@ -1,10 +1,13 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.user.Create;
 import ru.practicum.shareit.user.Update;
-
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;

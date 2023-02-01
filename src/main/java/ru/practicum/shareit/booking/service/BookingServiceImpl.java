@@ -11,7 +11,6 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-
 import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.UnsupportedStateException;
@@ -19,8 +18,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
-
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,19 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
-
-import javax.persistence.*;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 
 @Getter
 @Setter
