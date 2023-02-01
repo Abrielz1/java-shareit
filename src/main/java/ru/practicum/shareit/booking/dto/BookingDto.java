@@ -19,14 +19,20 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 public class BookingDto {
+
     @NotNull(groups = Update.class)
     private Long id;
+
     @FutureOrPresent(groups = Create.class)
     private LocalDateTime start;
+
     @Future(groups = Create.class)
     private LocalDateTime end;
+
     @NotNull(groups = Create.class)
     private Long itemId;
+
     private Long bookerId;
+
     private BookingStatus status;
 }
