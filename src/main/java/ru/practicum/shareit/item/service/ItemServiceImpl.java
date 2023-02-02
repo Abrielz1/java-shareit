@@ -20,7 +20,6 @@ import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -78,7 +77,7 @@ public class ItemServiceImpl implements ItemService {
             if (itemDto.getDescription() != null) {
                 item.setDescription(itemDto.getDescription());
             }
-            if (itemDto.getAvailable() != null){
+            if (itemDto.getAvailable() != null) {
                 item.setAvailable(itemDto.getAvailable());
             }
             itemRepository.save(item);
