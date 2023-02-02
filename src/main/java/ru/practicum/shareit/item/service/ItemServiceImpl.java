@@ -48,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDtoBooking findItem(long userId, long itemId) {
         log.info("Item sent");
         Item item = itemRepository.findById(itemId).orElseThrow(() -> {
-            throw new ObjectNotFoundException("Item not found");
+            throw new ObjectNotFoundException("Вещь не найдена");
         });
         return setComments(setBookings(userId, item), itemId);
     }
@@ -57,7 +57,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public ItemDto create(long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> {
-            throw new ObjectNotFoundException("User not found");
+            throw new ObjectNotFoundException("Пользователь не найден");
         });
         log.info("Item created");
         Item item = itemRepository.save(ItemMapper.toItem(itemDto, user));
@@ -72,13 +72,19 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotFoundException("Item not found for update");
         });
         if (item.getOwner().getId() == userId) {
-            if (itemDto.getName() != null) item.setName(itemDto.getName());
-            if (itemDto.getDescription() != null) item.setDescription(itemDto.getDescription());
-            if (itemDto.getAvailable() != null) item.setAvailable(itemDto.getAvailable());
+            if (itemDto.getName() != null) {
+                item.setName(itemDto.getName());
+            }
+            if (itemDto.getDescription() != null) {
+                item.setDescription(itemDto.getDescription());
+            }
+            if (itemDto.getAvailable() != null){
+                item.setAvailable(itemDto.getAvailable());
+            }
             itemRepository.save(item);
             log.info("Item updated");
         } else {
-            throw new ObjectNotFoundException("Item not found for update");
+            throw new ObjectNotFoundException("Вещь для обновления не найдена");
         }
         return ItemMapper.toItemDto(item);
     }
@@ -86,7 +92,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> searchItem(String text) {
         log.info("Search results sent");
-        if (text.isBlank()) return Collections.emptyList();
+        if (text.isBlank()) {
+            return Collections.emptyList();
+        }
         return itemRepository.searchByText(text.toLowerCase())
                 .stream()
                 .map(ItemMapper::toItemDto)
@@ -99,7 +107,7 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ObjectNotFoundException("Item not found"));
         bookingRepository.findByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now())
-                .orElseThrow(() -> new BadRequestException("You can't make a comment to this item"));
+                .orElseThrow(() -> new BadRequestException("Вы не можете комментировать эту вещь"));
         Comment comment = CommentMapper.toComment(user, item, commentDto);
         commentRepository.save(comment);
         return CommentMapper.toCommentDto(comment);

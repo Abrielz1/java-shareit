@@ -36,15 +36,19 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingDtoResponse create(long bookerId, BookingDto bookingDto) {
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> {
-            throw new ObjectNotFoundException("Item not found");
+            throw new ObjectNotFoundException("Вещь не найдена");
         });
         User user = userRepository.findById(bookerId).orElseThrow(() -> {
-            throw new ObjectNotFoundException("Wrong user");
+            throw new ObjectNotFoundException("Не тот пользователь");
         });
-        if (item.getOwner().getId() == bookerId) throw new ObjectNotFoundException("You can't book your item");
-        if (!item.getAvailable()) throw new BadRequestException("Item not available now for booking");
+        if (item.getOwner().getId() == bookerId) {
+            throw new ObjectNotFoundException("Вы не можете заказать вещь");
+        }
+        if (!item.getAvailable()) {
+            throw new BadRequestException("Вещь не доступна для заказа");
+        }
         if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
-            throw new BadRequestException("Wrong time to book this item");
+            throw new BadRequestException("Не правильное время для заказа вещи");
         }
         bookingDto.setStatus(BookingStatus.WAITING);
         Booking booking = bookingRepository.save(BookingMapper.toBooking(bookingDto, item, user));
@@ -60,9 +64,12 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("Booking not found");
         });
         Item item = booking.getItem();
-        if (userId != item.getOwner().getId()) throw new ObjectNotFoundException("You can't confirm this booking");
-        if (booking.getStatus() == BookingStatus.APPROVED)
-            throw new BadRequestException("You can't change status after approving");
+        if (userId != item.getOwner().getId()) {
+            throw new ObjectNotFoundException("Вы не можете подтвердить аренду этой вещи");
+        }
+        if (booking.getStatus() == BookingStatus.APPROVED) {
+            throw new BadRequestException("Вы не можете сменить статус после подтверждения");
+        }
         if (approved) {
             booking.setStatus(BookingStatus.APPROVED);
         } else booking.setStatus(BookingStatus.REJECTED);
@@ -72,12 +79,12 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtoResponse getBookingInfo(long userId, long bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
-            throw new ObjectNotFoundException("Booking not found");
+            throw new ObjectNotFoundException("Ваша аренда не найдена");
         });
         Item item = booking.getItem();
         if (booking.getBooker().getId() == userId || item.getOwner().getId() == userId) {
             return BookingMapper.toBookingDtoResponse(booking);
-        } else throw new ObjectNotFoundException("Access denied");
+        } else throw new ObjectNotFoundException("В доступе отказано!");
     }
 
     @Override
