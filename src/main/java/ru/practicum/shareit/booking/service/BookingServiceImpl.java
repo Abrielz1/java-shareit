@@ -13,7 +13,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
-import ru.practicum.shareit.exeption.UnsupportedStateException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -113,7 +112,7 @@ public class BookingServiceImpl implements BookingService {
                 books.addAll(bookingRepository.findByBookerAndStatus(userId, BookingStatus.REJECTED));
                 break;
             default:
-                throw new UnsupportedStateException("Unknown state: " + state);
+                throw new BadRequestException("Unknown state: " + state);
         }
         return books.stream()
                 .map(BookingMapper::toBookingDtoResponse)
@@ -146,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
                 books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.REJECTED));
                 break;
             default:
-                throw new UnsupportedStateException("Unknown state: " + state);
+                throw new BadRequestException("Unknown state: " + state);
         }
         return books.stream()
                 .map(BookingMapper::toBookingDtoResponse)
