@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.practicum.shareit.user.Create;
+import ru.practicum.shareit.user.Update;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -15,12 +17,12 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class UserDto {
 
-    private long id;
+    private Long id;
 
-    @NotBlank
+    @NotBlank(groups = Create.class)
     private String name;
 
-    @NotNull
-    @Email
+    @NotNull(groups = Create.class)
+    @Email(groups = {Create.class, Update.class})
     private String email;
 }

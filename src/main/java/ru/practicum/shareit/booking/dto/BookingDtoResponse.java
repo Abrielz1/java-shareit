@@ -6,11 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.shareit.booking.enums.BookingStatus;
-import ru.practicum.shareit.user.Create;
-import ru.practicum.shareit.user.Update;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotNull;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,21 +16,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class BookingDto {
+public class BookingDtoResponse {
 
-    @NotNull(groups = Update.class)
     private Long id;
 
-    @FutureOrPresent(groups = Create.class)
     private LocalDateTime start;
 
-    @Future(groups = Create.class)
     private LocalDateTime end;
 
-    @NotNull(groups = Create.class)
-    private Long itemId;
+    private Item item;
 
-    private Long bookerId;
+    private User booker;
 
     private BookingStatus status;
 }
