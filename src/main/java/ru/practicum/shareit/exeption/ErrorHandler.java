@@ -31,10 +31,10 @@ public class ErrorHandler {
         return new ErrorResponse("Object not available 400 ", exception.getMessage());
     }
 
-//    @ExceptionHandler(UnsupportedStateException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ErrorResponse handlerUnsupportedState(final UnsupportedStateException exception) {
-//        log.warn("500 {}", exception.getMessage(), exception);
-//        return new ErrorResponse(exception.getMessage(), exception.getMessage());
-//    }
+    @ExceptionHandler(UnsupportedStateException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handlerUnsupportedState(final UnsupportedStateException exception) {
+        log.warn("500 {}", exception.getMessage(), exception);
+        return new ErrorResponse(exception.getMessage(), exception.getMessage());
+    }
 }

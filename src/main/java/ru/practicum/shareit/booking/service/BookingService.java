@@ -16,5 +16,5 @@ public interface BookingService {
 
     List<BookingDtoResponse> getByBooker(long userId, String state);
 
-    List<BookingDtoResponse> getByOwner(long userId, String state) throws BadRequestException;
+    List<BookingDtoResponse> getByOwner(long userId, String state);
 }
