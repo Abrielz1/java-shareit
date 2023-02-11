@@ -50,8 +50,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto update(long id, UserDto userDto) {
         User user = repository.findById(id).orElseThrow(() -> {
-            log.warn("User with id {} not found", id);
-            throw new ObjectNotFoundException("User not found");
+            log.warn("Пользователь с id {} не найден", id);
+            throw new ObjectNotFoundException("Пользователь не найден");
         });
         if (userDto.getEmail() != null) {
             user.setEmail(userDto.getEmail());
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto delete(long id) {
        User user = repository.findById(id).orElseThrow(() ->
-               new ObjectNotFoundException(""));
+               new ObjectNotFoundException("Пользователь не найден"));
         log.info("User with id {} deleted", id);
         repository.findById(id).ifPresent(repository::delete);
         return UserMapper.toUserDto(user);

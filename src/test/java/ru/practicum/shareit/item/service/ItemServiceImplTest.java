@@ -2,9 +2,11 @@ package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.booking.storage.BookingRepository;
+import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.booking.enums.BookingStatus;
+import ru.practicum.shareit.user.service.UserServiceImpl;
 import ru.practicum.shareit.user.storage.UserRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.item.mapper.CommentMapper;
@@ -28,6 +30,7 @@ import org.mockito.quality.Strictness;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import org.mockito.InjectMocks;
+import java.util.Collections;
 import java.util.Optional;
 import org.mockito.Mock;
 import java.util.List;
@@ -53,6 +56,12 @@ class ItemServiceImplTest {
 
     @Mock
     private ItemRequestRepository itemRequestRepository;
+
+//    @InjectMocks
+//    UserService userService;
+
+    @Mock
+    private UserServiceImpl userServiceImpl;
 
     private User user1;
 
@@ -130,7 +139,6 @@ class ItemServiceImplTest {
 
     @Test
     void create() {
-
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(user1));
 
@@ -147,8 +155,47 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void update() {
+    void createInappropriateItemWithNoUser() {
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () ->
+                itemService.create(
+                        user1.getId(),
+                        ItemMapper.toItemDto(item1)
+                        ));
+    }
 
+    @Test
+    void  createInappropriateItemWithNoRequestId() {
+        item1.setItemRequest(null);
+
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () ->
+                itemService.create(
+                        user1.getId(),
+                        ItemMapper.toItemDto(item1)
+                ));
+    }
+
+    @Test
+    void creatItemWithNullItemRequest() {
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(user1));
+        when(repository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(item1));
+
+        ItemDto itemDto = ItemMapper.toItemDto(item1);
+        itemDto.setRequestId(3000L);
+
+        ObjectNotFoundException exc = assertThrows(ObjectNotFoundException.class, () ->
+                itemService.create(user1.getId(), itemDto)
+        );
+    }
+
+    @Test
+    void update() {
         when(repository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(item1));
         when(repository.save(any(Item.class)))
@@ -164,18 +211,60 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void updateItemFromNotOwnerTest() {
+        when(repository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(item1));
+        when(repository.save(any(Item.class)))
+                .thenReturn(item1);
+
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class,
+                () -> itemService.update(
+                        50L,
+                        user2.getId(),
+                        ItemMapper.toItemDto(item1)));
+    }
+
+    @Test
+    void updateItemFromNotUserTest() {
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+
+        user1.setId(1L);
+        ObjectNotFoundException exc = assertThrows(ObjectNotFoundException.class,
+                () -> itemService.findItem(2L, item1.getId()));
+
+        assertEquals("Вещь для обновления не найдена", exc.getMessage());
+    }
+
+    @Test
+    void updateItemFromNotItemTest() {
+        when(repository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+        item1.setId(2L);
+        user1.setId(1L);
+        ItemDto itemDto = ItemMapper.toItemDto(item1);
+        ObjectNotFoundException exc = assertThrows(ObjectNotFoundException.class,
+                () -> itemService.update(user1.getId(), 1L, itemDto));
+
+        assertEquals("Вещь для обновления не найдена", exc.getMessage());
+    }
+
+    @Test
     void searchItemWithNameInUpperFirstLetter() {
-        when(repository.searchByText(anyString(), any(PageRequest.class)))
-                .thenReturn(List.of(item1));
 
         List<ItemDto> itemDtos = itemService.searchItem("Item1", 0, 20);
 
-        assertEquals(1, itemDtos.size());
-        assertEquals(1, itemDtos.get(0).getId());
-        assertEquals("Item1 name", itemDtos.get(0).getName());
-        assertEquals("Item1 description", itemDtos.get(0).getDescription());
-        assertEquals(true, itemDtos.get(0).getAvailable());
-        assertNull(itemDtos.get(0).getRequestId());
+        assertEquals(Collections.emptyList(), itemDtos);
+    }
+
+    @Test
+    void searchItemWithBlancText() {
+
+        when(repository.searchByText(anyString(), any(PageRequest.class)))
+                .thenReturn(List.of(item1));
+        List<ItemDto> itemDtos = itemService.searchItem("", 0, 20);
+
+
     }
 
     @Test

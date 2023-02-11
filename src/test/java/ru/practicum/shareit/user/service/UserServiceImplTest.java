@@ -1,7 +1,7 @@
 package ru.practicum.shareit.user.service;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import ru.practicum.shareit.user.storage.UserRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -47,6 +47,7 @@ class UserServiceImplTest {
         assertEquals("user1@mail.com", userDto.getEmail());
     }
 
+
     @Test
     void updateUserWithEmailFormatTest() {
     when(repository.findById(anyLong()))
@@ -60,6 +61,19 @@ class UserServiceImplTest {
         assertEquals(1, userDto.getId());
         assertEquals("User1 name", userDto.getName());
         assertEquals("user1@mail.com", userDto.getEmail());
+    }
+
+    @Test
+    void updateUserWithNoUser() {
+        when(repository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+        UserDto userDto = UserMapper.toUserDto(user1);
+        userDto.setId(10L);
+        ObjectNotFoundException exc = assertThrows(ObjectNotFoundException.class,
+                () ->service.update(1L, userDto)
+        );
+
+        assertEquals("Пользователь не найден", exc.getMessage());
     }
 
     @Test
@@ -121,6 +135,19 @@ class UserServiceImplTest {
         assertEquals(1, userDto.getId());
         assertEquals("User1 name", userDto.getName());
         assertEquals("user1@mail.com", userDto.getEmail());
+    }
+
+    @Test
+    void deleteUserTestWithNoUser() {
+        when(repository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+        UserDto userDto = UserMapper.toUserDto(user1);
+        userDto.setId(10L);
+        ObjectNotFoundException exc = assertThrows(ObjectNotFoundException.class,
+                () -> service.delete(1L)
+        );
+
+        assertEquals("Пользователь не найден", exc.getMessage());
     }
 
     @Test
