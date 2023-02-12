@@ -37,20 +37,20 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingDtoResponse create(long bookerId, BookingDto bookingDto) {
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> {
-            throw new ObjectNotFoundException("Item not found");
+            throw new ObjectNotFoundException("Вещь не найдена");
         });
         User user = userRepository.findById(bookerId).orElseThrow(() -> {
-            throw new ObjectNotFoundException("Wrong user");
+            throw new ObjectNotFoundException("не тот пользователь");
         });
-        if (item.getOwner().getId() == bookerId) throw new ObjectNotFoundException("You can't book your item");
-        if (!item.getAvailable()) throw new BadRequestException("Item not available now for booking");
+        if (item.getOwner().getId() == bookerId) throw new ObjectNotFoundException("Вы не можете забронировать вашу вещь");
+        if (!item.getAvailable()) throw new BadRequestException("Вещь сейчас не доступна, для бронирования");
         if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
-            throw new BadRequestException("Wrong time to book this item");
+            throw new BadRequestException("Не правильное время для бронирования");
         }
         bookingDto.setStatus(BookingStatus.WAITING);
         Booking booking = bookingRepository.save(BookingMapper.toBooking(bookingDto, item, user));
         BookingDtoResponse bookingDtoResponse = BookingMapper.toBookingDtoResponse(booking);
-        log.info("Item created");
+        log.info("Вещь создана");
         return bookingDtoResponse;
     }
 
@@ -58,12 +58,12 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingDtoResponse changeStatus(long userId, long bookingId, boolean approved) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
-            throw new ObjectNotFoundException("Booking not found");
+            throw new ObjectNotFoundException("Бронирование не найдено");
         });
         Item item = booking.getItem();
-        if (userId != item.getOwner().getId()) throw new ObjectNotFoundException("You can't confirm this booking");
+        if (userId != item.getOwner().getId()) throw new ObjectNotFoundException("Вы не можете подтвердить это бронирование");
         if (booking.getStatus() == BookingStatus.APPROVED)
-            throw new BadRequestException("You can't change status after approving");
+            throw new BadRequestException("Вы не можете сменить статус, после подтверждения");
         if (approved) {
             booking.setStatus(BookingStatus.APPROVED);
         } else booking.setStatus(BookingStatus.REJECTED);
@@ -73,18 +73,18 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtoResponse getBookingInfo(long userId, long bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
-            throw new ObjectNotFoundException("Booking not found");
+            throw new ObjectNotFoundException("Бронирование не найдено");
         });
         Item item = booking.getItem();
         if (booking.getBooker().getId() == userId || item.getOwner().getId() == userId) {
             return BookingMapper.toBookingDtoResponse(booking);
-        } else throw new ObjectNotFoundException("Access denied");
+        } else throw new ObjectNotFoundException("В доступе отказано!");
     }
 
     @Override
     public List<BookingDtoResponse> getByBooker(long userId, String state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> {
-            throw new ObjectNotFoundException("User not found");
+            throw new ObjectNotFoundException("Пользователь не найден");
         });
         int page = from / size;
         PageRequest pg = PageRequest.of(page, size);
@@ -109,7 +109,7 @@ public class BookingServiceImpl implements BookingService {
                 books.addAll(bookingRepository.findByBookerAndStatus(userId, BookingStatus.REJECTED, pg));
                 break;
             default:
-                throw new UnsupportedStateException("Unknown state: " + state);
+                throw new UnsupportedStateException("Статус не известен: " + state);
         }
         return books.stream()
                 .map(BookingMapper::toBookingDtoResponse)
@@ -119,7 +119,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDtoResponse> getByOwner(long userId, String state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> {
-            throw new ObjectNotFoundException("User not found");
+            throw new ObjectNotFoundException("Пользователь не найден");
         });
         int page = from / size;
         PageRequest pg = PageRequest.of(page, size);
@@ -144,7 +144,7 @@ public class BookingServiceImpl implements BookingService {
                 books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.REJECTED, pg));
                 break;
             default:
-                throw new UnsupportedStateException("Unknown state: " + state);
+                throw new UnsupportedStateException("UСтатус не известен: " + state);
         }
         return books.stream()
                 .map(BookingMapper::toBookingDtoResponse)

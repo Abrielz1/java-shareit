@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.storage;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import org.springframework.data.repository.query.Param;
@@ -88,4 +89,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findBookingsNext(@Param("ids") List<Long> ids,
                                    @Param("now") LocalDateTime now,
                                    @Param("userId") long userId);
+
 }

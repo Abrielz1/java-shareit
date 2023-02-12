@@ -57,9 +57,6 @@ class ItemServiceImplTest {
     @Mock
     private ItemRequestRepository itemRequestRepository;
 
-//    @InjectMocks
-//    UserService userService;
-
     @Mock
     private UserServiceImpl userServiceImpl;
 
@@ -335,5 +332,51 @@ class ItemServiceImplTest {
         assertEquals(1, commentDto.getId());
         assertEquals("Comment1 text", commentDto.getText());
         assertEquals("User1 name", commentDto.getAuthorName());
+    }
+
+    @Test
+    void createCommentTest() {
+        when(bookingRepository.findByBookerIdAndItemIdAndEndBefore(
+                anyLong(),
+                anyLong(),
+                any(LocalDateTime.class)))
+                .thenReturn(Optional.of(booking1));
+
+        when(repository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(item1));
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(user1));
+        when(commentRepository.save(any(Comment.class)))
+                .thenReturn(comment1);
+
+        CommentDto commentDto = itemService.addComment(
+                1,
+                1,
+                CommentMapper.toCommentDto(comment1)
+                );
+
+        assertEquals(1, commentDto.getId());
+        assertEquals("Comment1 text", commentDto.getText());
+        assertEquals("User1 name", commentDto.getAuthorName());
+    }
+
+    @Test
+    void createCommentFromUserWithoutBookingTest() {
+        when(bookingRepository.findByBookerIdAndItemIdAndEndBefore(
+                anyLong(),
+                anyLong(),
+                any(LocalDateTime.class)))
+                .thenReturn(Optional.empty());
+
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class,
+                () -> itemService.addComment(
+                        1,
+                        1,
+                        CommentMapper.toCommentDto(comment1)
+                        ));
+
+        assertEquals(
+                "User not found",
+                exception.getMessage());
     }
 }

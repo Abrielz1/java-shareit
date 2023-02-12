@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.storage;
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @DataJpaTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ItemRepositoryTest {
 
     @Autowired
@@ -29,6 +31,8 @@ class ItemRepositoryTest {
     @Autowired
     private ItemRequestRepository itemRequestRepository;
 
+    private LocalDateTime now;
+
     private User user1;
 
     private User user2;
@@ -39,7 +43,6 @@ class ItemRepositoryTest {
 
     @BeforeEach
     void beforeEach() {
-
         LocalDateTime now = LocalDateTime.now();
 
         user1 = new User(1L, "User1 name", "user1@mail.com");
@@ -67,13 +70,23 @@ class ItemRepositoryTest {
         List<Item> items1 = new ArrayList<>();
         items1.add(item1);
 
-       assertEquals(items1.get(0).getId(), items.get(0).getId());
-       assertEquals(items1.get(0).getName(), items.get(0).getName());
-       assertEquals(items1.get(0).getDescription(), items.get(0).getDescription());
+        assertEquals(items1.get(0).getId(), items.get(0).getId());
+        assertEquals(items1.get(0).getName(), items.get(0).getName());
+        assertEquals(items1.get(0).getDescription(), items.get(0).getDescription());
+    }
+
+    @Test
+    void findByItemRequestIdTest() {
+        List<Item> items = itemRepository.findByItemRequestId(itemRequest1.getId());
+
+        assertEquals(List.of(item1).size(), items.size());
+        assertEquals(item1.getId(), items.get(0).getId());
+        assertEquals(item1.getName(), items.get(0).getName());
     }
 
     @Test
     void searchByTextTestFindDescription() {
+
         String text = "description";
         List<Item> items = itemRepository.searchByText(text, PageRequest.of(0, 10));
 
@@ -100,15 +113,6 @@ class ItemRepositoryTest {
                 .collect(Collectors.toList());
 
         List<Item> items = itemRepository.searchByRequestsId(ids);
-
-        assertEquals(List.of(item1).size(), items.size());
-        assertEquals(item1.getId(), items.get(0).getId());
-        assertEquals(item1.getName(), items.get(0).getName());
-    }
-
-    @Test
-    void findByItemRequestIdTest() {
-        List<Item> items = itemRepository.findByItemRequestId(itemRequest1.getId());
 
         assertEquals(List.of(item1).size(), items.size());
         assertEquals(item1.getId(), items.get(0).getId());
