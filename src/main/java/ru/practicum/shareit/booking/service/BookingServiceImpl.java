@@ -34,13 +34,13 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
 
     @Override
-    @Transactional
+    @Transactional //todo сделать тест на не правильное время бронирование start < end
     public BookingDtoResponse create(long bookerId, BookingDto bookingDto) {
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> {
             throw new ObjectNotFoundException("Вещь не найдена");
         });
         User user = userRepository.findById(bookerId).orElseThrow(() -> {
-            throw new ObjectNotFoundException("не тот пользователь");
+            throw new ObjectNotFoundException("Не тот пользователь");
         });
         if (item.getOwner().getId() == bookerId) throw new ObjectNotFoundException("Вы не можете забронировать вашу вещь");
         if (!item.getAvailable()) throw new BadRequestException("Вещь сейчас не доступна, для бронирования");
@@ -144,7 +144,7 @@ public class BookingServiceImpl implements BookingService {
                 books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.REJECTED, pg));
                 break;
             default:
-                throw new UnsupportedStateException("UСтатус не известен: " + state);
+                throw new UnsupportedStateException("Статус не известен: " + state);
         }
         return books.stream()
                 .map(BookingMapper::toBookingDtoResponse)
