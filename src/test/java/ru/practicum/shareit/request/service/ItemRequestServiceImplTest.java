@@ -1,32 +1,32 @@
 package ru.practicum.shareit.request.service;
 
-import org.junit.jupiter.api.Test;
+import ru.practicum.shareit.request.storage.ItemRequestRepository;
+import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
+import ru.practicum.shareit.exeption.ObjectNotFoundException;
+import ru.practicum.shareit.request.mapper.ItemRequestMapper;
+import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.user.storage.UserRepository;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.model.ItemRequest;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import ru.practicum.shareit.exeption.ObjectNotFoundException;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemRepository;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
-import ru.practicum.shareit.request.mapper.ItemRequestMapper;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.storage.ItemRequestRepository;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.quality.Strictness;
+import org.junit.jupiter.api.Test;
+import java.time.LocalDateTime;
+import org.mockito.InjectMocks;
+import java.util.Collections;
+import org.mockito.Mockito;
+import java.util.Optional;
+import org.mockito.Mock;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -37,23 +37,23 @@ class ItemRequestServiceImplTest {
     private ItemRequestServiceImpl itemRequestService;
 
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Mock
-    ItemRequestRepository requestRepository;
+    private ItemRequestRepository requestRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
 
-    User user = new User(
+    private User user = new User(
             1L,
             "name",
             "email@email.ru");
-    ItemRequestDto itemRequestDto = new ItemRequestDto(
+    private ItemRequestDto itemRequestDto = new ItemRequestDto(
             1L,
             1L,
             "description",
             LocalDateTime.now());
-    Item item = new Item(
+    private Item item = new Item(
             1L,
             "name",
             "description",

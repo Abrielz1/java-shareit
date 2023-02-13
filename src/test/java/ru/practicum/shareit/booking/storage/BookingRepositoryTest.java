@@ -21,7 +21,7 @@ class BookingRepositoryTest {
     @Autowired
     private TestEntityManager em;
     @Autowired
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
 
     User user = new User(
             null,
