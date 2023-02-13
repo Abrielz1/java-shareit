@@ -15,7 +15,7 @@ public class ItemRequestDto {
 
     private Long id;
 
-    private Long requestor_id;
+    private Long requestorid;
 
     @NotBlank(groups = Create.class)
     @Size(groups = Create.class, min = 1, max = 200)
