@@ -1,10 +1,10 @@
 package ru.practicum.shareit.request.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
+import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.user.storage.UserRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -26,13 +26,16 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemRequestServiceImpl implements ItemRequestService {
+
     private final ItemRepository itemRepository;
+
     private final ItemRequestRepository requestRepository;
+
     private final UserRepository userRepository;
 
     @Override
     public ItemRequestDto create(long userId, ItemRequestDto itemRequestDto) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("Пользователь не найден"));
         itemRequestDto.setCreated(LocalDateTime.now());
         ItemRequest itemRequest = requestRepository.save(ItemRequestMapper.toItemRequest(itemRequestDto, user));
         log.info("Request created with id {}", itemRequest.getId());
@@ -41,7 +44,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoResponse> getRequestsInfo(long userId) {
-        userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
+        userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("Пользователь не найден"));
         List<ItemRequestDtoResponse> responseList = requestRepository.findAllByRequestorId(userId).stream()
                 .map(ItemRequestMapper::toItemRequestDtoResponse)
                 .collect(Collectors.toList());
@@ -50,9 +53,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDtoResponse getRequestInfo(long userId, long requestId) {
-        userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
+        userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("Пользователь не найден"));
         ItemRequest itemRequest = requestRepository.findById(requestId).orElseThrow(() ->
-                new ObjectNotFoundException("Request not found"));
+                new ObjectNotFoundException("Запрос не найден"));
         List<ItemDto> items = itemRepository.findByItemRequestId(requestId).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());

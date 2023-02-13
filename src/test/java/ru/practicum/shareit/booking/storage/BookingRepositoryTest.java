@@ -1,205 +1,243 @@
 package ru.practicum.shareit.booking.storage;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.enums.BookingStatus;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exeption.ObjectNotFoundException;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemRepository;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.junit.jupiter.api.Assertions.*;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
+import org.junit.jupiter.api.Test;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BookingRepositoryTest {
 
     @Autowired
-    private BookingRepository bookingRepository;
-
+    private TestEntityManager em;
     @Autowired
-    private UserRepository userRepository;
+    BookingRepository bookingRepository;
 
-    @Autowired
-    private ItemRepository itemRepository;
+    User user = new User(
+            null,
+            "name",
+            "email@email.ru");
+    User user2 = new User(
+            null,
+            "name2",
+            "email2@email.ru");
+    Item item = new Item(
+            null,
+            "name",
+            "description",
+            true,
+            user,
+            null);
+    Booking booking = new Booking(
+            null,
+            LocalDateTime.now().minusHours(3),
+            LocalDateTime.now().minusHours(1),
+            item,
+            user2,
+            null);
 
-
-    private LocalDateTime now;
-
-    private LocalDateTime start;
-
-    private LocalDateTime end;
-
-    private User user1;
-
-    private User user2;
-
-    private Item item1;
-
-    private Booking booking1;
-
-    @BeforeEach
-    void beforeEach() {
-        now = LocalDateTime.now();
-        start = LocalDateTime.now().plusDays(1);
-        end = LocalDateTime.now().plusDays(2);
-        user1 = new User(1L, "User1 name", "user1@mail.com");
-        user2 = new User(2L, "User2 name", "user2@mail.com");
-        user1 = userRepository.save(user1);
-        user2 = userRepository.save(user2);
-
-        item1 = Item.builder()
-                .id(1L)
-                .name("Item1 name")
-                .description("Item1 description")
-                .available(true)
-                .owner(user1)
-                .itemRequest(null)
-                .build();
-        item1 = itemRepository.save(item1);
-
-        booking1 = Booking.builder()
-                .id(1L)
-                .start(start)
-                .end(end)
-                .item(item1)
-                .booker(user2)
-                .status(BookingStatus.WAITING)
-                .build();
-        booking1 = bookingRepository.save(booking1);
+    @Test
+    void contextLoads() {
+        assertNotNull(em);
     }
-
-    @AfterEach
-    void afterEach() {
-        bookingRepository.deleteAll();
-        userRepository.deleteAll();
-        itemRepository.deleteAll();
-    }
-
 
     @Test
     void findAllByBookerIdOrderByStartDescTest() {
-        List<Booking> bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(
-                user2.getId(), PageRequest.of(0, 10));
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        PageRequest pg = PageRequest.of(0, 10);
 
-        assertEquals(List.of(booking1), bookings);
+        List<Booking> bookingList = bookingRepository.findAllByBookerIdOrderByStartDesc(user2.getId(), pg);
+
+        assertEquals(1, bookingList.size());
+        assertEquals(booking, bookingList.get(0));//id могут сбиться, проверить при запуске всех тестов
     }
 
     @Test
-    void indByBookerIdOrderByStartDescTest() {
-        booking1.setStart(start.minusDays(5));
-        booking1.setEnd(end.plusDays(5));
-        bookingRepository.save(booking1);
-        List<Booking> bookings = bookingRepository.findByBookerCurrent(
-                user2.getId(), now, PageRequest.of(0, 10));
+    void findByBookerCurrentTest() {
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        PageRequest pg = PageRequest.of(0, 10);
 
-        assertEquals(List.of(booking1), bookings);
+        List<Booking> bookingList = bookingRepository.findByBookerCurrent(user2.getId(), LocalDateTime.now().minusHours(2), pg);
+
+        assertEquals(1, bookingList.size());
+        assertEquals(booking, bookingList.get(0));
     }
 
     @Test
-    void findByBookerIdAndEndBeforeOrderByStartDescTest() {
-        booking1.setStart(start.minusDays(5));
-        booking1.setEnd(end.minusDays(3));
-        bookingRepository.save(booking1);
+    void findByBookerPastTest() {
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        PageRequest pg = PageRequest.of(0, 10);
 
-        List<Booking> bookings = bookingRepository.findByBookerPast(
-                user2.getId(), now, PageRequest.of(0, 10));
+        List<Booking> bookingList = bookingRepository.findByBookerPast(user2.getId(), LocalDateTime.now().plusHours(2), pg);
+
+        assertEquals(1, bookingList.size());
+        assertEquals(booking, bookingList.get(0));
     }
 
     @Test
-    void findByBookerIdAndStartAfterOrderByStartDescTest() {
-        List<Booking> bookings = bookingRepository.findByBookerFuture(
-                user2.getId(), now, PageRequest.of(0, 10));
+    void findByBookerFutureTest() {
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        PageRequest pg = PageRequest.of(0, 10);
 
-        assertEquals(List.of(booking1), bookings);
+        List<Booking> bookingList = bookingRepository.findByBookerFuture(user2.getId(), LocalDateTime.now().minusHours(4), pg);
+
+        assertEquals(1, bookingList.size());
+        assertEquals(booking, bookingList.get(0));
     }
 
     @Test
-    void findByBookerIdAndStatusOrderByStartDescTest() {
-        List<Booking> bookings = bookingRepository.findByBookerAndStatus(
-                user2.getId(), BookingStatus.WAITING, PageRequest.of(0, 10));
+    void findByBookerAndStatusTest() {
+        booking.setStatus(BookingStatus.WAITING);
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        PageRequest pg = PageRequest.of(0, 10);
 
-        assertEquals(List.of(booking1), bookings);
-    }
-    @Test
-    void findByItemOwnerIdOrderByStartDescTest() {
-        List<Booking> bookings = bookingRepository.findByItemOwnerIdOrderByStartDesc(
-                user1.getId(), PageRequest.of(0, 10));
+        List<Booking> bookingList = bookingRepository.findByBookerAndStatus(user2.getId(), BookingStatus.WAITING, pg);
 
-        assertEquals(List.of(booking1), bookings);
-    }
-
-    @Test
-    void findByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDescTest() {
-        booking1.setStart(start.minusDays(5));
-        booking1.setEnd(end.plusDays(5));
-        bookingRepository.save(booking1);
-        List<Booking> bookings = bookingRepository.findByBookerCurrent(
-                user1.getId(), now, PageRequest.of(0, 10));
-
-    //    assertEquals(List.of(booking1).size(), bookings.size());
+        assertEquals(1, bookingList.size());
+        assertEquals(booking, bookingList.get(0));
     }
 
     @Test
-    void findByItemOwnerIdAndEndBeforeOrderByStartDescTest() {
-        booking1.setStart(start.minusDays(5));
-        booking1.setEnd(end.minusDays(3));
-        bookingRepository.save(booking1);
-        List<Booking> bookings = bookingRepository.findByBookerPast(
-                user1.getId(), now, PageRequest.of(0, 10));
+    void findAllByOwnerIdOrderByStartDescTest() {
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        PageRequest pg = PageRequest.of(0, 10);
 
-        assertEquals(List.of(booking1), bookings);
+        List<Booking> bookingList = bookingRepository.findByItemOwnerIdOrderByStartDesc(user.getId(), pg);
 
+        assertEquals(1, bookingList.size());
+        assertEquals(booking, bookingList.get(0));//id могут сбиться, проверить при запуске всех тестов
     }
 
     @Test
-    void findByItemOwnerIdAndStartAfterOrderByStartDescTest() {
-        List<Booking> bookings = bookingRepository.findByBookerFuture(
-                user1.getId(), now, PageRequest.of(0, 10));
+    void findByItemOwnerCurrentTest() {
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        PageRequest pg = PageRequest.of(0, 10);
 
-        assertEquals(List.of(booking1), bookings);
+        List<Booking> bookingList = bookingRepository.findByItemOwnerCurrent(user.getId(), LocalDateTime.now().minusHours(2), pg);
+
+        assertEquals(1, bookingList.size());
+        assertEquals(booking, bookingList.get(0));
     }
 
     @Test
-    void findByItemOwnerIdAndStatusOrderByStartDescTest() {
-        List<Booking> bookings = bookingRepository.findByBookerAndStatus(
-                user1.getId(), BookingStatus.WAITING, PageRequest.of(0, 10));
+    void findByItemOwnerPastTest() {
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        PageRequest pg = PageRequest.of(0, 10);
 
-        assertEquals(List.of(booking1), bookings);
-    }
+        List<Booking> bookingList = bookingRepository.findByItemOwnerPast(user.getId(), LocalDateTime.now().plusHours(2), pg);
 
-
-
-    @Test
-    void findBookingsLast() {
-
-        List<Long> ids = userRepository.findAll().stream()
-                .map(User::getId)
-                .collect(Collectors.toList());
-        List<Booking> bookings = bookingRepository.findBookingsLast(
-                ids, now,  user1.getId());
-        assertEquals(List.of(booking1).size(), bookings.size());
+        assertEquals(1, bookingList.size());
+        assertEquals(booking, bookingList.get(0));
     }
 
     @Test
-    void findBookingsNext() {
-        List<Long> ids = userRepository.findAll().stream()
-                .map(User::getId)
-                .collect(Collectors.toList());
-        List<Booking> bookings = bookingRepository.findBookingsNext(
-                ids, now,  user1.getId());
-        assertEquals(List.of(booking1).size(), bookings.size());
+    void findByItemOwnerFutureTest() {
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        PageRequest pg = PageRequest.of(0, 10);
+
+        List<Booking> bookingList = bookingRepository.findByItemOwnerFuture(user.getId(), LocalDateTime.now().minusHours(4), pg);
+
+        assertEquals(1, bookingList.size());
+        assertEquals(booking, bookingList.get(0));
+    }
+
+    @Test
+    void findByItemOwnerAndStatusTest() {
+        booking.setStatus(BookingStatus.WAITING);
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        PageRequest pg = PageRequest.of(0, 10);
+
+        List<Booking> bookingList = bookingRepository.findByItemOwnerAndStatus(user.getId(), BookingStatus.WAITING, pg);
+
+        assertEquals(1, bookingList.size());
+        assertEquals(booking, bookingList.get(0));
+    }
+
+    @Test
+    void findByBookerIdAndItemIdAndEndBeforeTest() {
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+
+        Booking res = bookingRepository.findByBookerIdAndItemIdAndEndBefore(user2.getId(), item.getId(),
+                LocalDateTime.now().plusHours(1)).orElseThrow();
+        assertEquals(booking, res);
+    }
+
+    @Test
+    void findBookingsLastTest() {
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        em.persist(booking);
+        Booking booking1 = booking;
+        booking1.setEnd(LocalDateTime.now().minusHours(6));
+        booking1.setStart(LocalDateTime.now().minusHours(5));
+        em.persist(booking1);
+
+        List<Booking> res = bookingRepository.findBookingsLast(List.of(item.getId()), LocalDateTime.now(), user.getId());
+
+        assertEquals(1, res.size());
+        assertEquals(booking, res.get(0));
+    }
+
+    @Test
+    void findBookingsNextTest() {
+        em.persist(user);
+        em.persist(user2);
+        em.persist(item);
+        booking.setEnd(LocalDateTime.now().plusHours(7));
+        booking.setStart(LocalDateTime.now().plusHours(6));
+        em.persist(booking);
+        Booking booking1 = booking;
+        booking1.setEnd(LocalDateTime.now().plusHours(4));
+        booking1.setStart(LocalDateTime.now().plusHours(3));
+        em.persist(booking1);
+
+        List<Booking> res = bookingRepository.findBookingsNext(List.of(item.getId()), LocalDateTime.now(), user.getId());
+
+        assertEquals(1, res.size());
+        assertEquals(booking1, res.get(0));
     }
 }

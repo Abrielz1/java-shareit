@@ -89,5 +89,4 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findBookingsNext(@Param("ids") List<Long> ids,
                                    @Param("now") LocalDateTime now,
                                    @Param("userId") long userId);
-
 }

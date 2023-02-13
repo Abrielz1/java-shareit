@@ -1,33 +1,33 @@
 package ru.practicum.shareit.booking.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import ru.practicum.shareit.booking.storage.BookingRepository;
+import ru.practicum.shareit.exeption.UnsupportedStateException;
+import ru.practicum.shareit.exeption.ObjectNotFoundException;
+import ru.practicum.shareit.booking.dto.BookingDtoResponse;
+import ru.practicum.shareit.exeption.BadRequestException;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.enums.BookingStatus;
+import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.user.storage.UserRepository;
+import static org.mockito.ArgumentMatchers.anyLong;
+import org.springframework.data.domain.PageRequest;
+import ru.practicum.shareit.booking.model.Booking;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import org.springframework.data.domain.PageRequest;
-import ru.practicum.shareit.booking.enums.BookingStatus;
-import ru.practicum.shareit.booking.dto.BookingDtoResponse;
-import ru.practicum.shareit.booking.mapper.BookingMapper;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.exeption.BadRequestException;
-import ru.practicum.shareit.exeption.ObjectNotFoundException;
-import ru.practicum.shareit.exeption.UnsupportedStateException;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemRepository;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.item.model.Item;
 import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.quality.Strictness;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import org.mockito.Mock;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -53,8 +53,6 @@ class BookingServiceImplTest {
 
     private User user2;
 
-    private User user3;
-
     private Item item1;
 
     private Booking booking1;
@@ -67,7 +65,6 @@ class BookingServiceImplTest {
 
         user1 = new User(1L, "User1 name", "user1@mail.com");
         user2 = new User(2L, "User2 name", "user2@mail.com");
-        user3 = new User(3L, "User3 name", "user3@mail.com");
 
         item1 = Item.builder()
                 .id(1L)
@@ -196,42 +193,6 @@ class BookingServiceImplTest {
 
         assertEquals("Не тот пользователь", exception.getMessage());
     }
-
-    //todo createBookingWithEndTimeBeforeStartTime
-
-    //   @Test
-    //   void createBookingWithEndTimeBeforeStartTime() {
-//
-//          booking1.setEnd(LocalDateTime.now().plusDays(3));
-//          when(userRepository.findById(anyLong()));
-//
-//        when(userRepository.findById(anyLong()))
-//                .thenReturn(Optional.ofNullable(user1));
-//
-//        when(itemRepository.findById(anyLong()))
-//                .thenReturn(Optional.ofNullable(item1));
-//
-//        when(bookingRepository.save(any(Booking.class)))
-//                .thenReturn(booking1);
-//
-//        BookingDtoResponse bookingDtoResponse = bookingService.create(
-//                user2.getId(),
-//                BookingMapper.toBookingDto(booking1)
-//        );
-
-//        booking1.setStart(LocalDateTime.now().plusDays(6));
-//        when(userRepository.findById(anyLong()));
-//
-//        booking1.setEnd(LocalDateTime.now().minusDays(1));
-//        when(userRepository.findById(anyLong()));
-
-
-//        BadRequestException exception = assertThrows(BadRequestException.class,
-//                () -> bookingService.create(user2.getId(),
-//                        BookingMapper.toBookingDto(booking1)));
-//
-//        assertEquals("Не правильное время для бронирования", exception.getMessage());
-//    }
 
     @Test
     void changeStatus() {

@@ -29,12 +29,15 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BookingServiceImpl implements BookingService {
+
     private final UserRepository userRepository;
+
     private final BookingRepository bookingRepository;
+
     private final ItemRepository itemRepository;
 
     @Override
-    @Transactional //todo сделать тест на не правильное время бронирование start < end
+    @Transactional
     public BookingDtoResponse create(long bookerId, BookingDto bookingDto) {
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> {
             throw new ObjectNotFoundException("Вещь не найдена");
