@@ -65,7 +65,7 @@ class ItemRequestControllerTest {
                         .content(objectMapper.writeValueAsString(itemRequestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.requestor_id").value(1L))
+                .andExpect(jsonPath("$.requestorid").value(1L))
                 .andExpect(jsonPath("$.description").value("description"));
     }
 
