@@ -63,6 +63,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(user1Dto)));
     }
+
     @Test
     void getAllUsersTest() throws Exception {
         when(userService.getAllUsers())

@@ -86,7 +86,7 @@ class UserServiceImplTest {
                 .thenReturn(user1);
 
         UserDto userDto = UserMapper.toUserDto(user1);
-        service.update(userDto.getId() ,userDto);
+        service.update(userDto.getId(), userDto);
 
         assertEquals(1, userDto.getId());
         assertEquals("User1 name", userDto.getName());

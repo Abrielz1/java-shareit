@@ -59,7 +59,7 @@ class BookingDtoResponseTest {
         Integer itemId = Math.toIntExact(booking1DtoResponse.getItem().getId());
         Integer bookerId = Math.toIntExact(booking1DtoResponse.getBooker().getId());
 
-        assertThat(result).hasJsonPath("$.id") ;
+        assertThat(result).hasJsonPath("$.id");
         assertThat(result).hasJsonPath("$.start");
         assertThat(result).hasJsonPath("$.end");
         assertThat(result).hasJsonPath("$.item");
@@ -67,12 +67,12 @@ class BookingDtoResponseTest {
         assertThat(result).hasJsonPath("$.status");
 
         assertThat(result).extractingJsonPathNumberValue("$.id")
-                .isEqualTo(id) ;
+                .isEqualTo(id);
       assertThat(result).extractingJsonPathNumberValue("$.item.id")
               .isEqualTo(itemId);
         assertThat(result).extractingJsonPathNumberValue("$.booker.id")
                 .isEqualTo(bookerId);
         assertThat(result).extractingJsonPathStringValue("$.status")
-                .isEqualTo(booking1DtoResponse.getStatus().toString()) ;
+                .isEqualTo(booking1DtoResponse.getStatus().toString());
     }
 }
