@@ -70,7 +70,7 @@ class UserServiceImplTest {
         UserDto userDto = UserMapper.toUserDto(user1);
         userDto.setId(10L);
         ObjectNotFoundException exc = assertThrows(ObjectNotFoundException.class,
-                () ->service.update(1L, userDto)
+                () -> service.update(1L, userDto)
         );
 
         assertEquals("Пользователь не найден", exc.getMessage());

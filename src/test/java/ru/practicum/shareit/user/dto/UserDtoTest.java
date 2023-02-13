@@ -23,6 +23,7 @@ class UserDtoTest {
         User user1 = new User(1L, "User1 name", "user1@mail.com");
         user1Dto = UserMapper.toUserDto(user1);
     }
+
     @Test
     void testSerialize() throws Exception {
         JsonContent<UserDto> result = json.write(user1Dto);
