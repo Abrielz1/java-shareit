@@ -24,6 +24,7 @@ class ItemRequestRepositoryTest {
     private UserRepository userRepository;
 
     private User user1;
+
     private ItemRequest itemRequest1;
 
     @BeforeEach
@@ -46,8 +47,6 @@ class ItemRequestRepositoryTest {
         userRepository.deleteAll();
         itemRequestRepository.deleteAll();
     }
-
-
 
     @Test
     void findAllByRequesterId() {

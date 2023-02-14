@@ -8,11 +8,13 @@ import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.storage.UserRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
+import org.springframework.data.domain.PageRequest;
 import static org.mockito.ArgumentMatchers.anyLong;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.data.domain.PageImpl;
 import static org.mockito.ArgumentMatchers.any;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
@@ -32,7 +34,6 @@ import java.util.List;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ItemRequestServiceImplTest {
 
-
     @InjectMocks
     private ItemRequestServiceImpl itemRequestService;
 
@@ -45,16 +46,23 @@ class ItemRequestServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
+    private LocalDateTime now = LocalDateTime.now();
 
     private User user = new User(
             1L,
             "name",
             "email@email.ru");
+
     private ItemRequestDto itemRequestDto = new ItemRequestDto(
             1L,
             1L,
             "description",
             LocalDateTime.now());
+
+    private ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, user);
+
+    private ItemRequestDtoResponse itemRequestDtoResponse = ItemRequestMapper.toItemRequestDtoResponse(itemRequest);
+
     private Item item = new Item(
             1L,
             "name",
@@ -66,9 +74,13 @@ class ItemRequestServiceImplTest {
     @Test
     void create_whenUserFound_thenSaved() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, user);
+
         when(requestRepository.save(any())).thenReturn(itemRequest);
+
         ItemRequestDto actual = itemRequestService.create(user.getId(), itemRequestDto);
+
         itemRequestDto.setCreated(actual.getCreated());
 
         assertEquals(itemRequestDto.getId(), actual.getId());
@@ -103,9 +115,12 @@ class ItemRequestServiceImplTest {
     @Test
     void getRequestInfo_whenUserAndRequestFound_thenReturnRequestsList() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, user);
+
         when(requestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
         item.setItemRequest(itemRequest);
+
         when(itemRepository.findByItemRequestId(anyLong())).thenReturn(Collections.singletonList(item));
 
         ItemRequestDtoResponse responseRequest = itemRequestService.getRequestInfo(user.getId(), itemRequestDto.getId());
@@ -135,5 +150,26 @@ class ItemRequestServiceImplTest {
         );
 
         assertEquals("Запрос не найден", exception.getMessage());
+    }
+
+    @Test
+    void getItemRequestsTest() {
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(user));
+
+        when(requestRepository.findAllPageable(anyLong(), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(List.of(itemRequest)));
+
+        List<ItemRequestDtoResponse> itemRequestDtos = itemRequestService.getRequestsList(
+                user.getId(),
+                0,
+                10);
+
+        assertEquals(1, itemRequestDtos.size());
+        assertEquals(1, itemRequestDtos.get(0).getId());
+        assertEquals("description", itemRequestDtos.get(0).getDescription());
+        assertEquals(user.getId(), itemRequestDtos.get(0).getRequestorId());
+        assertEquals(now, itemRequestDtos.get(0).getCreated());
+        assertEquals(Collections.emptyList(), itemRequestDtos.get(0).getItems());
     }
 }
