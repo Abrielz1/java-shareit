@@ -1,7 +1,5 @@
 package ru.practicum.shareit.request.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
@@ -128,7 +126,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getRequestsListTest() { //todo Почему-то не засчитывается
+    void getRequestsListTest() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
         when(requestRepository.findById(anyLong())).thenThrow(new ObjectNotFoundException("Запрос не найден"));
 
