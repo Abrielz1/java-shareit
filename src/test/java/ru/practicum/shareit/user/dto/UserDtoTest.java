@@ -28,7 +28,7 @@ class UserDtoTest {
     void testSerialize() throws Exception {
         JsonContent<UserDto> result = json.write(user1Dto);
 
-       Integer value = Math.toIntExact(user1Dto.getId()); //по другому ни как не хотело в int
+       Integer value = Math.toIntExact(user1Dto.getId()); //по другому ни как, не хотело в int
 
         assertThat(result).hasJsonPath("$.id");
         assertThat(result).hasJsonPath("$.name");

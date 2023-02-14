@@ -1,27 +1,24 @@
 package ru.practicum.shareit.item.storage;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.junit.runner.RunWith;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
-import ru.practicum.shareit.user.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.user.storage.UserRepository;
-
+import ru.practicum.shareit.request.model.ItemRequest;
+import org.springframework.data.domain.PageRequest;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 @DataJpaTest
 @RunWith(SpringRunner.class)
@@ -38,10 +35,6 @@ class ItemRepositoryTest {
 
     private User user1;
 
-    private User user2;
-
-    private ItemRequest itemRequest1;
-
     private Item item1;
 
     @BeforeEach
@@ -50,10 +43,10 @@ class ItemRepositoryTest {
 
         user1 = new User(1L, "User1 name", "user1@mail.com");
         userRepository.save(user1);
-        user2 = new User(2L, "User2 name", "user2@mail.com");
+        User user2 = new User(2L, "User2 name", "user2@mail.com");
         userRepository.save(user2);
 
-        itemRequest1 = new ItemRequest(1L, user1, "ItemRequest1 description", now);
+        ItemRequest itemRequest1 = new ItemRequest(1L, user1, "ItemRequest1 description", now);
         itemRequestRepository.save(itemRequest1);
 
         item1 = new Item(1L, "Item1 name", "Item1 description", true, user1, itemRequest1);

@@ -4,10 +4,10 @@ import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import ru.practicum.shareit.user.storage.UserRepository;
-import ru.practicum.shareit.user.mapper.UserMapper;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.ArgumentMatchers.anyLong;
+import ru.practicum.shareit.user.mapper.UserMapper;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -96,7 +96,7 @@ class UserServiceImplTest {
     @Test
     void getAllUsersWhenUserFoundThenUserNotFoundExceptionThrown() {
         long userId = 0L;
-        User expectedUser = new User();
+    //    User expectedUser = new User();
         when(repository.findById(userId))
                 .thenReturn(Optional.empty());
         assertThrows(ObjectNotFoundException.class, () -> service.getById(userId));
@@ -155,11 +155,11 @@ class UserServiceImplTest {
         when(repository.findAll())
                 .thenReturn(List.of(user1));
 
-        List<UserDto> userDtos = service.getAllUsers();
+        List<UserDto> userDto = service.getAllUsers();
 
-        assertEquals(1, userDtos.size());
-        assertEquals(1, userDtos.get(0).getId());
-        assertEquals("User1 name", userDtos.get(0).getName());
-        assertEquals("user1@mail.com", userDtos.get(0).getEmail());
+        assertEquals(1, userDto.size());
+        assertEquals(1, userDto.get(0).getId());
+        assertEquals("User1 name", userDto.get(0).getName());
+        assertEquals("user1@mail.com", userDto.get(0).getEmail());
     }
 }

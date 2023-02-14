@@ -50,7 +50,7 @@ class ItemRequestRepositoryTest {
 
 
     @Test
-    void findAllByRequestorId() {
+    void findAllByRequesterId() {
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorId(user1.getId());
 
         assertEquals(List.of(itemRequest1), itemRequests);

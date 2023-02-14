@@ -13,10 +13,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ItemDtoBooking {
     private long id;
+
     private String name;
+
     private String description;
+
     private Boolean available;
+
     private BookingDto lastBooking;
+
     private BookingDto nextBooking;
+
     private List<CommentDto> comments;
 }

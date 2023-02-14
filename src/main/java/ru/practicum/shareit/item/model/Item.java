@@ -26,6 +26,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Table(name = "ITEMS")
 public class Item {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

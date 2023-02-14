@@ -90,26 +90,26 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("Пользователь не найден");
         });
         int page = from / size;
-        PageRequest pg = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size);
         List<Booking> books = new ArrayList<>();
         switch (state) {
             case "ALL":
-                books.addAll(bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pg));
+                books.addAll(bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pageRequest));
                 break;
             case "CURRENT":
-                books.addAll(bookingRepository.findByBookerCurrent(userId, LocalDateTime.now(), pg));
+                books.addAll(bookingRepository.findByBookerCurrent(userId, LocalDateTime.now(), pageRequest));
                 break;
             case "PAST":
-                books.addAll(bookingRepository.findByBookerPast(userId, LocalDateTime.now(), pg));
+                books.addAll(bookingRepository.findByBookerPast(userId, LocalDateTime.now(), pageRequest));
                 break;
             case "FUTURE":
-                books.addAll(bookingRepository.findByBookerFuture(userId, LocalDateTime.now(), pg));
+                books.addAll(bookingRepository.findByBookerFuture(userId, LocalDateTime.now(), pageRequest));
                 break;
             case "WAITING":
-                books.addAll(bookingRepository.findByBookerAndStatus(userId, BookingStatus.WAITING, pg));
+                books.addAll(bookingRepository.findByBookerAndStatus(userId, BookingStatus.WAITING, pageRequest));
                 break;
             case "REJECTED":
-                books.addAll(bookingRepository.findByBookerAndStatus(userId, BookingStatus.REJECTED, pg));
+                books.addAll(bookingRepository.findByBookerAndStatus(userId, BookingStatus.REJECTED, pageRequest));
                 break;
             default:
                 throw new UnsupportedStateException("Unknown state: " + state);
@@ -125,26 +125,26 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("Пользователь не найден");
         });
         int page = from / size;
-        PageRequest pg = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size);
         List<Booking> books = new ArrayList<>();
         switch (state) {
             case "ALL":
-                books.addAll(bookingRepository.findByItemOwnerIdOrderByStartDesc(userId, pg));
+                books.addAll(bookingRepository.findByItemOwnerIdOrderByStartDesc(userId, pageRequest));
                 break;
             case "CURRENT":
-                books.addAll(bookingRepository.findByItemOwnerCurrent(userId, LocalDateTime.now(), pg));
+                books.addAll(bookingRepository.findByItemOwnerCurrent(userId, LocalDateTime.now(), pageRequest));
                 break;
             case "PAST":
-                books.addAll(bookingRepository.findByItemOwnerPast(userId, LocalDateTime.now(), pg));
+                books.addAll(bookingRepository.findByItemOwnerPast(userId, LocalDateTime.now(), pageRequest));
                 break;
             case "FUTURE":
-                books.addAll(bookingRepository.findByItemOwnerFuture(userId, LocalDateTime.now(), pg));
+                books.addAll(bookingRepository.findByItemOwnerFuture(userId, LocalDateTime.now(), pageRequest));
                 break;
             case "WAITING":
-                books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.WAITING, pg));
+                books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.WAITING, pageRequest));
                 break;
             case "REJECTED":
-                books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.REJECTED, pg));
+                books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.REJECTED, pageRequest));
                 break;
             default:
                 throw new UnsupportedStateException("Unknown state: " + state);
