@@ -1,5 +1,7 @@
 package ru.practicum.shareit.request.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
@@ -38,8 +40,10 @@ class ItemRequestServiceImplTest {
 
     @Mock
     private ItemRepository itemRepository;
+
     @Mock
     private ItemRequestRepository requestRepository;
+
     @Mock
     private UserRepository userRepository;
 
@@ -77,8 +81,8 @@ class ItemRequestServiceImplTest {
     void create_whenUserNotFound_thenExceptionThrown() {
         when(userRepository.findById(anyLong())).thenThrow(new ObjectNotFoundException("User not found"));
 
-        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> itemRequestService.create(1L, itemRequestDto));
-        assertEquals("User not found", ex.getMessage());
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> itemRequestService.create(1L, itemRequestDto));
+        assertEquals("User not found", exception.getMessage());
     }
 
     @Test
@@ -94,8 +98,8 @@ class ItemRequestServiceImplTest {
     void getRequestsInfo_whenUserNotFound_thenExceptionThrown() {
         when(userRepository.findById(anyLong())).thenThrow(new ObjectNotFoundException("User not found"));
 
-        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getRequestsInfo(1L));
-        assertEquals("User not found", ex.getMessage());
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getRequestsInfo(1L));
+        assertEquals("User not found", exception.getMessage());
     }
 
     @Test
@@ -118,10 +122,20 @@ class ItemRequestServiceImplTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
         when(requestRepository.findById(anyLong())).thenThrow(new ObjectNotFoundException("Request not found"));
 
-        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () ->
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () ->
                 itemRequestService.getRequestInfo(user.getId(), itemRequestDto.getId()));
-        assertEquals("Request not found", ex.getMessage());
+        assertEquals("Request not found", exception.getMessage());
     }
 
+    @Test
+    void getRequestsListTest() { //todo Почему-то не засчитывается
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(requestRepository.findById(anyLong())).thenThrow(new ObjectNotFoundException("Запрос не найден"));
 
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () ->
+                itemRequestService.getRequestInfo(user.getId(), 1L)
+        );
+
+        assertEquals("Запрос не найден", exception.getMessage());
+    }
 }

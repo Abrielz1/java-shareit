@@ -38,7 +38,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         User user = userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("Пользователь не найден"));
         itemRequestDto.setCreated(LocalDateTime.now());
         ItemRequest itemRequest = requestRepository.save(ItemRequestMapper.toItemRequest(itemRequestDto, user));
-        log.info("Request created with id {}", itemRequest.getId());
+        log.info("Запрос создан с id {}", itemRequest.getId());
         return ItemRequestMapper.toItemRequestDto(itemRequest);
     }
 
@@ -67,8 +67,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDtoResponse> getRequestsList(long userId, int from, int size) {
         int page = from / size;
-        PageRequest pr = PageRequest.of(page, size);
-        List<ItemRequestDtoResponse> responseList = requestRepository.findAllPageable(userId, pr).stream()
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<ItemRequestDtoResponse> responseList = requestRepository.findAllPageable(userId, pageRequest).stream()
                 .map(ItemRequestMapper::toItemRequestDtoResponse)
                 .collect(Collectors.toList());
         return setItemsToRequests(responseList);
