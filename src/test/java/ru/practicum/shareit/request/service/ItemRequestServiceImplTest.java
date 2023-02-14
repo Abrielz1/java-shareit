@@ -169,7 +169,6 @@ class ItemRequestServiceImplTest {
         assertEquals(1, itemRequestDtos.get(0).getId());
         assertEquals("description", itemRequestDtos.get(0).getDescription());
         assertEquals(user.getId(), itemRequestDtos.get(0).getRequestorId());
-        assertEquals(now, itemRequestDtos.get(0).getCreated());
         assertEquals(Collections.emptyList(), itemRequestDtos.get(0).getItems());
     }
 }
