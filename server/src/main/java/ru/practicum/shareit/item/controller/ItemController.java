@@ -58,7 +58,8 @@ public class ItemController {
     public List<ItemDto> searchItem(@RequestParam(required = false, defaultValue = "0") int from,
                                     @RequestParam(required = false, defaultValue = "10") int size,
                                     @RequestParam String text) {
-        return itemService.searchItem(text, from, size);
+        PageRequest page = PageRequest.of(from / size, size);
+        return itemService.searchItem(text, page);
     }
 
     @PostMapping("/{itemId}/comment")

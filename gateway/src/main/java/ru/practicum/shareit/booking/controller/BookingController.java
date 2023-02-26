@@ -1,16 +1,19 @@
 package ru.practicum.shareit.booking.controller;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import ru.practicum.shareit.exeption.UnsupportedStateException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.booking.client.BookingClient;
+import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.Create;
-
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import javax.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.Create;
 
 @RestController
 @Validated
@@ -22,6 +25,9 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") long id, @Validated(Create.class) @RequestBody BookingDto bookingDto) {
+        if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
+            throw new BadRequestException("Не правильное время для бронирования");
+        }
         return bookingClient.create(id, bookingDto);
     }
 
@@ -43,7 +49,9 @@ public class BookingController {
                                               @RequestParam(defaultValue = "ALL", required = false) String state,
                                               @PositiveOrZero @RequestParam(defaultValue = "0", required = false) int from,
                                               @Positive @RequestParam(defaultValue = "20", required = false) int size) {
-        return bookingClient.getByBooker(userId, state, from, size);
+        BookingState status = BookingState.from(state).orElseThrow(() -> new UnsupportedStateException("Unknown state: " + state));
+        PageRequest page = PageRequest.of(from / size, size);
+        return bookingClient.getByBooker(userId, String.valueOf(status), from, size);
     }
 
     @GetMapping("/owner")

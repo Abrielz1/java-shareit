@@ -27,6 +27,8 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.mockito.Mockito.when;
 import org.mockito.quality.Strictness;
 import org.junit.jupiter.api.Test;
+
+import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import org.mockito.InjectMocks;
 import java.util.Collections;
@@ -228,17 +230,19 @@ class ItemServiceImplTest {
     @Test
     void searchItemWithNameInUpperFirstLetter() {
 
-        List<ItemDto> itemDtos = itemService.searchItem("Item1", 0, 20);
+        PageRequest page = PageRequest.of(0, 10);
+
+        List<ItemDto> itemDtos = itemService.searchItem("Item1", page);
 
         assertEquals(Collections.emptyList(), itemDtos);
     }
 
     @Test
     void searchItemWithBlancText() {
-
+        PageRequest page = PageRequest.of(0, 10);
         when(repository.searchByText(anyString(), any(PageRequest.class)))
                 .thenReturn(List.of(item1));
-        List<ItemDto> itemDtos = itemService.searchItem("", 0, 20);
+        List<ItemDto> itemDtos = itemService.searchItem("", page);
 
 
     }
@@ -247,8 +251,8 @@ class ItemServiceImplTest {
     void searchItemWithNameInRandomUpperCase() {
         when(repository.searchByText(anyString(), any(PageRequest.class)))
                 .thenReturn(List.of(item1));
-
-        List<ItemDto> itemDtos = itemService.searchItem("iTem1", 0, 20);
+        PageRequest page = PageRequest.of(0, 10);
+        List<ItemDto> itemDtos = itemService.searchItem("iTem1", page);
 
         assertEquals(1, itemDtos.size());
         assertEquals(1, itemDtos.get(0).getId());
@@ -262,8 +266,8 @@ class ItemServiceImplTest {
     void searchItemWithDescriptionInRandomUpperCase() {
         when(repository.searchByText(anyString(), any(PageRequest.class)))
                 .thenReturn(List.of(item1));
-
-        List<ItemDto> itemDtos = itemService.searchItem("desCription", 0, 20);
+        PageRequest page = PageRequest.of(0, 10);
+        List<ItemDto> itemDtos = itemService.searchItem("desCription", page);
 
         assertEquals(1, itemDtos.size());
         assertEquals(1, itemDtos.get(0).getId());
@@ -277,8 +281,8 @@ class ItemServiceImplTest {
     void searchItemWithDescriptionInUpperFirstLetter() {
         when(repository.searchByText(anyString(), any(PageRequest.class)))
                 .thenReturn(List.of(item1));
-
-        List<ItemDto> itemDtos = itemService.searchItem("desCription", 0, 20);
+        PageRequest page = PageRequest.of(0, 10);
+        List<ItemDto> itemDtos = itemService.searchItem("desCription", page);
 
         assertEquals(1, itemDtos.size());
         assertEquals(1, itemDtos.get(0).getId());

@@ -105,7 +105,7 @@ class ItemRequestControllerTest {
     void getRequestsListTest() throws Exception {
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, user);
         ItemRequestDtoResponse req = ItemRequestMapper.toItemRequestDtoResponse(itemRequest);
-        when(itemRequestService.getRequestsList(anyLong(), anyInt(), anyInt())).thenReturn(Collections.singletonList(req));
+        when(itemRequestService.getRequestsList(anyLong(), any())).thenReturn(Collections.singletonList(req));
 
         mvc.perform(get("/requests/all")
                         .contentType(MediaType.APPLICATION_JSON)

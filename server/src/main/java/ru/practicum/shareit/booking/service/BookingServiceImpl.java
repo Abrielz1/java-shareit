@@ -11,9 +11,9 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.storage.UserRepository;
-import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
@@ -85,31 +85,30 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoResponse> getByBooker(long userId, String state, int from, int size) {
+    public List<BookingDtoResponse> getByBooker(long userId, String state, Pageable page) {
         userRepository.findById(userId).orElseThrow(() -> {
             throw new ObjectNotFoundException("Пользователь не найден");
         });
-        int page = from / size;
-        PageRequest pageRequest = PageRequest.of(page, size);
+
         List<Booking> books = new ArrayList<>();
         switch (state) {
             case "ALL":
-                books.addAll(bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pageRequest));
+                books.addAll(bookingRepository.findAllByBookerIdOrderByStartDesc(userId, page));
                 break;
             case "CURRENT":
-                books.addAll(bookingRepository.findByBookerCurrent(userId, LocalDateTime.now(), pageRequest));
+                books.addAll(bookingRepository.findByBookerCurrent(userId, LocalDateTime.now(), page));
                 break;
             case "PAST":
-                books.addAll(bookingRepository.findByBookerPast(userId, LocalDateTime.now(), pageRequest));
+                books.addAll(bookingRepository.findByBookerPast(userId, LocalDateTime.now(), page));
                 break;
             case "FUTURE":
-                books.addAll(bookingRepository.findByBookerFuture(userId, LocalDateTime.now(), pageRequest));
+                books.addAll(bookingRepository.findByBookerFuture(userId, LocalDateTime.now(), page));
                 break;
             case "WAITING":
-                books.addAll(bookingRepository.findByBookerAndStatus(userId, BookingStatus.WAITING, pageRequest));
+                books.addAll(bookingRepository.findByBookerAndStatus(userId, BookingStatus.WAITING, page));
                 break;
             case "REJECTED":
-                books.addAll(bookingRepository.findByBookerAndStatus(userId, BookingStatus.REJECTED, pageRequest));
+                books.addAll(bookingRepository.findByBookerAndStatus(userId, BookingStatus.REJECTED, page));
                 break;
             default:
                 throw new UnsupportedStateException("Unknown state: " + state);
@@ -120,31 +119,30 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoResponse> getByOwner(long userId, String state, int from, int size) {
+    public List<BookingDtoResponse> getByOwner(long userId, String state, Pageable page) {
         userRepository.findById(userId).orElseThrow(() -> {
             throw new ObjectNotFoundException("Пользователь не найден");
         });
-        int page = from / size;
-        PageRequest pageRequest = PageRequest.of(page, size);
+
         List<Booking> books = new ArrayList<>();
         switch (state) {
             case "ALL":
-                books.addAll(bookingRepository.findByItemOwnerIdOrderByStartDesc(userId, pageRequest));
+                books.addAll(bookingRepository.findByItemOwnerIdOrderByStartDesc(userId, page));
                 break;
             case "CURRENT":
-                books.addAll(bookingRepository.findByItemOwnerCurrent(userId, LocalDateTime.now(), pageRequest));
+                books.addAll(bookingRepository.findByItemOwnerCurrent(userId, LocalDateTime.now(), page));
                 break;
             case "PAST":
-                books.addAll(bookingRepository.findByItemOwnerPast(userId, LocalDateTime.now(), pageRequest));
+                books.addAll(bookingRepository.findByItemOwnerPast(userId, LocalDateTime.now(), page));
                 break;
             case "FUTURE":
-                books.addAll(bookingRepository.findByItemOwnerFuture(userId, LocalDateTime.now(), pageRequest));
+                books.addAll(bookingRepository.findByItemOwnerFuture(userId, LocalDateTime.now(), page));
                 break;
             case "WAITING":
-                books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.WAITING, pageRequest));
+                books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.WAITING, page));
                 break;
             case "REJECTED":
-                books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.REJECTED, pageRequest));
+                books.addAll(bookingRepository.findByItemOwnerAndStatus(userId, BookingStatus.REJECTED, page));
                 break;
             default:
                 throw new UnsupportedStateException("Unknown state: " + state);

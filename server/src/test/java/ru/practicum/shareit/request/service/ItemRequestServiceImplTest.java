@@ -159,11 +159,10 @@ class ItemRequestServiceImplTest {
 
         when(requestRepository.findAllPageable(anyLong(), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(List.of(itemRequest)));
-
+        PageRequest page = PageRequest.of(0, 10);
         List<ItemRequestDtoResponse> itemRequestDtos = itemRequestService.getRequestsList(
                 user.getId(),
-                0,
-                10);
+                page);
 
         assertEquals(1, itemRequestDtos.size());
         assertEquals(1, itemRequestDtos.get(0).getId());

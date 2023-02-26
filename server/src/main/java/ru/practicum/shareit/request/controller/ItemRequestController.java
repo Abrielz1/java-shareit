@@ -12,8 +12,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
 import static ru.practicum.shareit.ShareItServer.HEADER;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.user.Create;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -46,6 +47,7 @@ public class ItemRequestController {
     public List<ItemRequestDtoResponse> getRequestsList(@RequestHeader(HEADER) long userId,
                             @RequestParam(defaultValue = "0", required = false) int from,
                             @RequestParam(defaultValue = "10", required = false) int size) {
-        return requestService.getRequestsList(userId, from, size);
+        PageRequest page = PageRequest.of(from / size, size);
+        return requestService.getRequestsList(userId, page);
     }
 }

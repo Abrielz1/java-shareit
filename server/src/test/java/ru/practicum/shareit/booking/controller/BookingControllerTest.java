@@ -121,7 +121,7 @@ class BookingControllerTest {
 
     @Test
     void getByBooker() throws Exception {
-        when(bookingService.getByBooker(anyLong(), any(String.class), anyInt(), anyInt()))
+        when(bookingService.getByBooker(anyLong(), any(String.class), any()))
                 .thenReturn(List.of(booking1DtoResponse));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/bookings")
@@ -132,7 +132,7 @@ class BookingControllerTest {
 
     @Test
     void getByOwner() throws Exception {
-        when(bookingService.getByOwner(anyLong(), any(String.class), anyInt(), anyInt()))
+        when(bookingService.getByOwner(anyLong(), any(String.class), any()))
                 .thenReturn(List.of(booking1DtoResponse));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/bookings/owner")

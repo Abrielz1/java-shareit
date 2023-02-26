@@ -10,7 +10,7 @@ import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.model.User;
@@ -65,10 +65,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDtoResponse> getRequestsList(long userId, int from, int size) {
-        int page = from / size;
-        PageRequest pageRequest = PageRequest.of(page, size);
-        List<ItemRequestDtoResponse> responseList = requestRepository.findAllPageable(userId, pageRequest).stream()
+    public List<ItemRequestDtoResponse> getRequestsList(long userId, Pageable page) {
+        List<ItemRequestDtoResponse> responseList = requestRepository.findAllPageable(userId, page).stream()
                 .map(ItemRequestMapper::toItemRequestDtoResponse)
                 .collect(Collectors.toList());
         return setItemsToRequests(responseList);

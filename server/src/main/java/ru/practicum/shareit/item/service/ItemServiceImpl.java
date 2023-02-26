@@ -14,9 +14,9 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDtoBooking;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.item.model.Comment;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -83,7 +83,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoBooking> findAll(long userId, PageRequest page) {
+    public List<ItemDtoBooking> findAll(long userId, Pageable page) {
         log.info("Вещи отправлены");
         return setAllBookingsAndComments(userId, itemRepository.findAllByOwnerIdOrderByIdAsc(userId, page));
     }
@@ -99,14 +99,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItem(String text, int from, int size) {
-        int page = from / size;
+    public List<ItemDto> searchItem(String text, Pageable page) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
         text = text.toUpperCase();
         log.info("Отправлены результаты поиска");
-        return itemRepository.searchByText(text.toLowerCase(), PageRequest.of(page, size))
+        return itemRepository.searchByText(text.toLowerCase(), page)
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());

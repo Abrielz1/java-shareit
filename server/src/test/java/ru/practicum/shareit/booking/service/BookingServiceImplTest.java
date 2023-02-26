@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exeption.UnsupportedStateException;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
@@ -364,10 +365,11 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByBookerIdOrderByStartDesc(anyLong(), any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByBooker(user1.getId(),
                 "ALL",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -388,10 +390,11 @@ class BookingServiceImplTest {
                 any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByBooker(user1.getId(),
                 "CURRENT",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -412,10 +415,11 @@ class BookingServiceImplTest {
                 any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByBooker(user1.getId(),
                 "PAST",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -436,10 +440,11 @@ class BookingServiceImplTest {
                 any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByBooker(user1.getId(),
                 "FUTURE",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -459,11 +464,12 @@ class BookingServiceImplTest {
                 any(BookingStatus.class),
                 any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
+        PageRequest page = PageRequest.of(0, 10);
+
 
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByBooker(user1.getId(),
                 "WAITING",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -484,10 +490,11 @@ class BookingServiceImplTest {
                 any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByBooker(user1.getId(),
                 "REJECTED",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -503,11 +510,12 @@ class BookingServiceImplTest {
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(user1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         UnsupportedStateException exception = assertThrows(UnsupportedStateException.class,
                 () -> bookingService.getByBooker(user1.getId(),
                         "UNKNOWN",
-                        0,
-                        10));
+                        page));
 
         assertEquals("Unknown state: UNKNOWN", exception.getMessage());
     }
@@ -521,12 +529,13 @@ class BookingServiceImplTest {
 
         booking1.setBooker(user2);
 
+        PageRequest page = PageRequest.of(0, 10);
+
         ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class,
                 () -> bookingService.getByBooker(
                         5L,
                         "WAITING",
-                        0,
-                        10));
+                        page));
         assertEquals("Пользователь не найден", exception.getMessage());
     }
 
@@ -537,10 +546,11 @@ class BookingServiceImplTest {
         when(bookingRepository.findByItemOwnerIdOrderByStartDesc(anyLong(), any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByOwner(user1.getId(),
                 "ALL",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -561,10 +571,11 @@ class BookingServiceImplTest {
                 any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByOwner(user1.getId(),
                 "CURRENT",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -585,10 +596,11 @@ class BookingServiceImplTest {
                 any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByOwner(user1.getId(),
                 "PAST",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -609,10 +621,11 @@ class BookingServiceImplTest {
                 any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByOwner(user1.getId(),
                 "FUTURE",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -633,10 +646,11 @@ class BookingServiceImplTest {
                 any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByOwner(user1.getId(),
                 "WAITING",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -657,10 +671,11 @@ class BookingServiceImplTest {
                 any(PageRequest.class)))
                 .thenReturn(List.of(booking1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         List<BookingDtoResponse> bookingDtoResponses = bookingService.getByOwner(user1.getId(),
                 "REJECTED",
-                0,
-                10);
+                page);
 
         assertEquals(1, bookingDtoResponses.size());
         assertEquals(1, bookingDtoResponses.get(0).getId());
@@ -676,11 +691,12 @@ class BookingServiceImplTest {
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(user1));
 
+        PageRequest page = PageRequest.of(0, 10);
+
         UnsupportedStateException exception = assertThrows(UnsupportedStateException.class,
                 () -> bookingService.getByOwner(user1.getId(),
                         "UNKNOWN",
-                        0,
-                        10));
+                        page));
 
         assertEquals("Unknown state: UNKNOWN", exception.getMessage());
     }
@@ -691,11 +707,12 @@ class BookingServiceImplTest {
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
+        PageRequest page = PageRequest.of(0, 10);
+
         ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class,
                 () -> bookingService.getByOwner(user1.getId(),
                         "WAITING",
-                        0,
-                        10));
+                        page));
 
         assertEquals("Пользователь не найден", exception.getMessage());
     }
