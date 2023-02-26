@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request.dto;
 
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.Create;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;

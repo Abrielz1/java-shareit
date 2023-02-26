@@ -1,8 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
 import ru.practicum.shareit.booking.enums.BookingStatus;
-import ru.practicum.shareit.user.Create;
-import ru.practicum.shareit.user.Update;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
