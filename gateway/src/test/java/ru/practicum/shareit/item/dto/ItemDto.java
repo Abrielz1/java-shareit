@@ -1,21 +1,18 @@
 package ru.practicum.shareit.item.dto;
 
-import ru.practicum.shareit.booking.dto.BookingDto;
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import java.util.List;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
+@Builder
 @AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
-public class ItemDtoBooking {
+public class ItemDto {
     private Long id;
     private String name;
     private String description;
     private Boolean available;
-    private BookingDto lastBooking;
-    private BookingDto nextBooking;
     private List<CommentDto> comments;
+    private Long requestId;
 }

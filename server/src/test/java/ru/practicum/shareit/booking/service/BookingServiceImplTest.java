@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.service;
 
-import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exeption.UnsupportedStateException;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;

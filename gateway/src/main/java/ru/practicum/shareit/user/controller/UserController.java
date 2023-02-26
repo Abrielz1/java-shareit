@@ -1,14 +1,14 @@
 package ru.practicum.shareit.user.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import ru.practicum.shareit.user.client.UserClient;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import ru.practicum.shareit.user.dto.UserDto;
+import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.Create;
 import ru.practicum.shareit.Update;
-import ru.practicum.shareit.user.client.UserClient;
-import ru.practicum.shareit.user.dto.UserDto;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -16,16 +16,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 public class UserController {
 
     private final UserClient userClient;
-
-    @GetMapping
-    public ResponseEntity<Object> getAllUsers() {
-        return userClient.getAllUsers();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getById(@PathVariable long id) {
-        return userClient.getById(id);
-    }
 
     @PostMapping
     public ResponseEntity<Object> create(@Validated(Create.class) @RequestBody UserDto userDto) {
@@ -35,6 +25,16 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable long id, @Validated(Update.class) @RequestBody UserDto userDto) {
         return userClient.update(id, userDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<Object> getAllUsers() {
+        return userClient.getAllUsers();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getById(@PathVariable long id) {
+        return userClient.getById(id);
     }
 
     @DeleteMapping("/{id}")

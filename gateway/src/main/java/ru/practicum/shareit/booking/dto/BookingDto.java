@@ -1,13 +1,12 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.*;
-import ru.practicum.shareit.Create;
-import ru.practicum.shareit.Update;
-
-import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Future;
+import ru.practicum.shareit.Create;
+import ru.practicum.shareit.Update;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Getter
 @Setter
