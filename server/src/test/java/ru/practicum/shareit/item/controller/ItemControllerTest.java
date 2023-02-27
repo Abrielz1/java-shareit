@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import static ru.practicum.shareit.common.Variables.HEADER;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.service.ItemService;
-import static ru.practicum.shareit.ShareItServer.HEADER;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.ItemDtoBooking;
 import ru.practicum.shareit.user.mapper.UserMapper;
