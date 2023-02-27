@@ -11,15 +11,15 @@ import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.service.BookingService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import static ru.practicum.shareit.common.Variables.HEADER;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import org.springframework.data.domain.PageRequest;
-import ru.practicum.shareit.user.Create;
+import ru.practicum.shareit.common.Create;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 
-import static ru.practicum.shareit.ShareItServer.HEADER;
 @Validated
 @RestController
 @RequestMapping(path = "/bookings")

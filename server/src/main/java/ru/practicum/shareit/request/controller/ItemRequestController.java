@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.validation.annotation.Validated;
+import static ru.practicum.shareit.common.Variables.HEADER;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
-import static ru.practicum.shareit.ShareItServer.HEADER;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import org.springframework.data.domain.PageRequest;
-import ru.practicum.shareit.user.Create;
+import ru.practicum.shareit.common.Create;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 

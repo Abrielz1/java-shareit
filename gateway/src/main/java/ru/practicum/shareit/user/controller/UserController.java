@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import ru.practicum.shareit.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
-import ru.practicum.shareit.Create;
-import ru.practicum.shareit.Update;
+import ru.practicum.shareit.common.Create;
+import ru.practicum.shareit.common.Update;
 
 @RestController
 @RequestMapping(path = "/users")

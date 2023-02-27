@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.Create;
-import ru.practicum.shareit.user.Update;
+import ru.practicum.shareit.common.Create;
+import ru.practicum.shareit.common.Update;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 
