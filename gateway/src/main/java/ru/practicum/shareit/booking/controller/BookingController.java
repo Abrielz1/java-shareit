@@ -51,7 +51,6 @@ public class BookingController {
                                               @PositiveOrZero @RequestParam(defaultValue = "0", required = false) int from,
                                               @Positive @RequestParam(defaultValue = "20", required = false) int size) {
         BookingState status = BookingState.from(state).orElseThrow(() -> new UnsupportedStateException("Unknown state: " + state));
-        PageRequest page = PageRequest.of(from / size, size);
         return bookingClient.getByBooker(userId, String.valueOf(status), from, size);
     }
 

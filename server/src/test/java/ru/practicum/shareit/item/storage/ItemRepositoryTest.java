@@ -36,22 +36,22 @@ class ItemRepositoryTest {
 
     private User user1;
 
+    private User user2;
+
+    private ItemRequest itemRequest1;
+
     private Item item1;
 
     @BeforeEach
     void beforeEach() {
         LocalDateTime now = LocalDateTime.now();
+       user1 = userRepository.save(new User(1L, "User1 name", "user1@mail.com"));
+       user2 = userRepository.save(new User(2L, "User2 name", "user2@mail.com"));
 
-        user1 = new User(1L, "User1 name", "user1@mail.com");
-        userRepository.save(user1);
-        User user2 = new User(2L, "User2 name", "user2@mail.com");
-        userRepository.save(user2);
+       itemRequest1 = itemRequestRepository.save(new ItemRequest(1L, user1, "ItemRequest1 description", now));
 
-        ItemRequest itemRequest1 = new ItemRequest(1L, user1, "ItemRequest1 description", now);
-        itemRequestRepository.save(itemRequest1);
+       item1 = itemRepository.save(new Item(1L, "Item1 name", "Item1 description", true, user1, itemRequest1));
 
-        item1 = new Item(1L, "Item1 name", "Item1 description", true, user1, itemRequest1);
-        itemRepository.save(item1);
     }
 
     @AfterEach
